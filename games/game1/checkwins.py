@@ -10,28 +10,45 @@ class Simulate():
         self.k = k
         self.simulate()
 
+    def yield_make(self, k):
+        for i in range(1,k+1):
+            yield i
+            yield i
+
     def simulate(self):
         # Length of max sum
-        n = math.ceil(math.sqrt(self.s))
-        p1 = [i for i in range(1,self.k+1)]
-        p2 = [i for i in range(1,self.k+1)]
-        self.subset_sum(p1+p2, self.s)
+        for answer in self.subset_sum_iter(self.yield_make(self.k), self.s):
+            self.solution.add(tuple(answer))
 
-    def subset_sum(self, numbers, target, partial=[]):
-        s = sum(partial)
+    def subset_sum_iter(self, array, target):
+        array = sorted(array)
+        # Checkpoint A
 
-        # check if the partial sum is equals to target
-        if s == target: 
-            self.solution.add(tuple(sorted(partial)))
-            # print("sum(%s)=%s" % (partial, target))
-        if s >= target:
-            return  # if we reach the number why bother to continue
+        last_index = {0: [-1]}
+        for i, value in enumerate(array):
+            for s in list(last_index.keys()):
+                new_s = s + value
+                if 0 < (new_s - target):
+                    pass # Cannot lead to target
+                elif new_s in last_index:
+                    last_index[new_s].append(i)
+                else:
+                    last_index[new_s] = [i]
+        # Checkpoint B
+        # Now yield up the answers.
+        def recur(new_target, max_i):
+            for i in last_index[new_target]:
+                if i == -1:
+                    yield [] # Empty sum.
+                elif max_i <= i:
+                    break # Not our solution.
+                else:
+                    for answer in recur(new_target - array[i], i):
+                        answer.append(array[i])
+                        yield answer
 
-        for i in range(len(numbers)):
-            n = numbers[i]
-            remaining = numbers[i+1:]
-            self.subset_sum(remaining, target, partial + [n]) 
-
+        for answer in recur(target, len(array)):
+            yield answer
 
 if __name__ == "__main__":
     s = int(input("Enter the sum: "))
@@ -40,5 +57,5 @@ if __name__ == "__main__":
         print("No solution")
     current_time = time.time()        
     simulator = Simulate(s, k)
-    print(simulator.solution)
     print("Time taken: ", time.time() - current_time)
+    print(simulator.solution)
