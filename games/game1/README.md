@@ -9,4 +9,7 @@
     - Else, P1 always wins
 * W/O Repetitions:
     - if s == (k+1)*n, where n is some integer -> P2 always wins
-    - 
+
+## Conjecture:
+* W/O Repetitions:
+    - if offset is not 0, P1 always wins
