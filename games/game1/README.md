@@ -1,4 +1,6 @@
-# Walkthrough:
+# CARD NIM
+
+## Walkthrough:
 
 * Terms:
     - a,b are complemantary if a + b = k + 1

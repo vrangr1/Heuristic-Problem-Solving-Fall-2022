@@ -1,0 +1,3 @@
+[submodule "games/game1/cardnimarchitect"]
+	path = games/game1/cardnimarchitect
+	url = https://github.com/HUNTINGHOUND/cardnimarchitect.git

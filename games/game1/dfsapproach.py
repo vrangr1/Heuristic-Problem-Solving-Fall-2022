@@ -87,5 +87,5 @@ class Solution:
 
 temp = Solution()
 current_time = time.time()
-print(temp.canIWin(12, 150))
+print(temp.canIWin(4, 9))
 print("Time taken: ", time.time() - current_time)
