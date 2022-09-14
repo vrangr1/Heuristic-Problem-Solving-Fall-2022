@@ -1,3 +1,4 @@
+import time
 debugFlag = False
 
 class Solution:
@@ -9,7 +10,6 @@ class Solution:
 		Helper method to print out the choices in a human readable way
 		"""
 		choices = bin(choices)[2:]
-		# choices = choices.zfill(15)
 		choices = choices[::-1]
 		return choices
 
@@ -86,7 +86,6 @@ class Solution:
 		return answer
 
 temp = Solution()
-print(temp.canIWin(4, 9))
-# Print the dictionary cases
-print(temp.seen)
-# print(temp.get_largest_1_bit(7))
+current_time = time.time()
+print(temp.canIWin(12, 150))
+print("Time taken: ", time.time() - current_time)
