@@ -40,9 +40,9 @@ class Simulate():
                 if 0 < (new_s - target):
                     pass # Cannot lead to target
                 elif new_s in last_index:
-                    last_index[new_s].append(i)
+                    last_index[new_s].add(i)
                 else:
-                    last_index[new_s] = [i]
+                    last_index[new_s] = set([i])
         # Checkpoint B
         # Now yield up the answers.
         def recur(new_target, max_i):
