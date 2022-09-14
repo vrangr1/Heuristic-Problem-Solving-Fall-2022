@@ -1,30 +1,3 @@
-# def dfs(M, T, k, m):
-# 	# print(k)
-# 	# print(bin(k))
-# 	if T<=0:
-# 		return False
-# 	if k in m:
-# 		return m[k]
-# 	for i in range(0,M):		
-# 		if not (k&1<<i) and not dfs(M, T-i-1, (k|1)<<i, m): 
-# 			m[k&1<<i] = True
-# 			return m[k&1<<i]
-# 		else:
-# 			m[k&1<<i] = False
-# 	m[k] = False
-# 	return m[k]
-
-# def canIWin(M, T):
-# 	S = M*(M+1)/2
-# 	if M>=T:
-# 		return True
-# 	if S < T:
-# 		return False
-# 	if S==T:
-# 		return True if M%2==0 else False
-# 	m = dict()
-# 	return dfs(M,T,0,m)
-
 debugFlag = False
 
 class Solution:
