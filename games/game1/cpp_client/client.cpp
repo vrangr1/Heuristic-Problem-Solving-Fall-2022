@@ -16,17 +16,6 @@
 
 using namespace std;
 
-typedef long long int ll;
-typedef unsigned long long int ull;
-typedef short int si;
-template <typename type> void print(const vector<vector<type> > &arr);
-template <typename type> void print(const vector<type> &arr);
-template <typename type> void off_print(const vector<type> &arr);
-template <typename t1, typename t2> void print(const vector<pair<t1,t2> > &arr);
-template <typename t1, typename t2> void print(const vector<vector<pair<t1,t2> > > &arr);
-template <typename t1, typename t2> void print(const pair<t1, t2> &p);
-
-
 // change this to whatever you want
 std::string bot_name = "Do Kitkat Addicts Dream of NP Problems?";
 
@@ -126,66 +115,4 @@ int main(int argc, char* argv[]) {
 	// main game loop
 	play_game();
 	return 0;
-}
-
-
-template <typename type> void print(const vector<vector<type> > &arr){
-	cout << "\n[";
-	for(int i; i < arr.size(); ++i){
-		cout << "[";
-		for(int j; j < arr[i].size() - 1; ++j)
-			cout << arr[i][j] << ", ";
-		cout << arr[i][arr[i].size() - 1] << "]";
-		if (i != arr.size() - 1)
-			cout << "," << endl;
-	}
-	cout << "], 2D Vector\n";
-}
-
-
-template <typename type> void print(const vector<type> &arr){
-	cout << "\n[";
-	for(int i; i < arr.size(); ++i){
-		cout << arr[i];
-		if (i != arr.size() - 1)
-			cout << ", ";
-	}
-	cout << "], 1D Vector\n";
-}
-
-template <typename type> void off_print(const vector<type> &arr){
-	for(int i; i < arr.size(); ++i)
-		cout << arr[i] << " ";
-	cout << endl;
-}
-
-
-template <typename t1, typename t2> void print(const vector<pair<t1,t2> > &arr){
-	int n = arr.size();
-	cout << "\n[";
-	for(int i; i < n - 1; ++i)
-		cout << "{" << arr[i].first << "," << arr[i].second << "}, ";
-	cout << "{" << arr[n - 1].first << "," << arr[n - 1].second << "}], 1D Vector of Pairs\n";
-}
-
-
-template <typename t1, typename t2> void print(const vector<vector<pair<t1,t2> > > &arr){
-	cout << "\n[";
-	for(int i; i < arr.size(); ++i){
-		cout << "[";
-		for(int j; j < arr[i].size(); ++j){
-			cout << "{" << arr[i][j].first << "," << arr[i][j].second << "}";
-			if (j != arr[i].size() - 1)
-				cout << ", ";
-		}
-		cout << "]";
-		if (i != arr.size() - 1)
-			cout << "," << endl;
-	}
-	cout << "], 2D Vector of Pairs\n";
-}
-
-
-template <typename t1, typename t2> void print(const pair<t1, t2> &p){
-	cout << "\n{" << p.first << "," << p.second << "}, Pair\n";
 }
