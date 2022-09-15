@@ -23,7 +23,6 @@ typedef short int si;
 #define debug_mode false
 
 enum LOSS_STRATEGY{
-    RANDOM,
     BIGGEST,
     SMALLEST
 };
@@ -122,10 +121,6 @@ class Player{
         int choices, turn_number;
         Simulation *simulator;
         bool debug_print;
-    
-    int random_loss_move(){
-        return 0;
-    }
 
     int biggest_loss_move(){
         int new_choice, enemy_move, biggest_enemy_move = LOSS, my_move = -1;
@@ -146,14 +141,11 @@ class Player{
                 cout << "Oops!!! You shouldn't have made that move!\n";
                 return i;
             }
-            assert(enemy_move > LOSS);
-            assert(this->simulator->check_choice(new_choice, enemy_move, this->turn_number + 1));
             if (biggest_enemy_move < enemy_move){
                 biggest_enemy_move = enemy_move;
                 my_move = i;
             }
         }
-        assert(my_move != -1);
         return my_move;
     }
 
@@ -176,22 +168,16 @@ class Player{
                 cout << "Oops!!! You shouldn't have made that move!\n";
                 return i;
             }
-            assert(enemy_move > LOSS);
-            assert(this->simulator->check_choice(new_choice, enemy_move, this->turn_number + 1));
             if (smallest_enemy_move > enemy_move){
                 smallest_enemy_move = enemy_move;
                 my_move = i;
             }
         }
-        assert(my_move != -1);
         return my_move;
     }
 
     int optimal_loss_move(){
         switch(this->strategy){
-            case RANDOM:
-                assert(false);
-                break;
             case BIGGEST:
                 return biggest_loss_move();
                 break;
@@ -225,7 +211,6 @@ class Player{
         }
         
         int get_next_move(int updated_stones){
-            assert(this->simulator != nullptr);
             this->turn_number += 2;
             if (this->turn_number > 0)
             assert(updated_stones != this->cur_stones);
@@ -239,7 +224,6 @@ class Player{
             assert(this->cur_stones > 0);
             int move = this->simulator->seen[this->choices];
             if (move > LOSS){
-                assert(this->simulator->check_choice(this->choices, move, this->turn_number));
                 this->cur_stones -= move;
                 this->choices = this->simulator->get_new_choices(this->choices, move, this->turn_number);
                 if (this->debug_print){
@@ -253,9 +237,7 @@ class Player{
                 cout << "processing\n";
                 this->simulator->can_win(this->choices, this->cur_stones, this->turn_number);
                 move = this->simulator->seen[this->choices];
-                assert(move >= LOSS);
                 if (move > LOSS){
-                    assert(this->simulator->check_choice(this->choices, move, this->turn_number));
                     this->cur_stones -= move;
                     this->choices = this->simulator->get_new_choices(this->choices, move, this->turn_number);
                     if (this->debug_print){
@@ -265,7 +247,6 @@ class Player{
                     return move;
                 }
             }
-            assert(move == LOSS);
             if (this->debug_print)
             cout << "LOSS MOVE\n";
             move = optimal_loss_move();
