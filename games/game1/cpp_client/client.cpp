@@ -7,19 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <fstream>
-#include <vector>
-#include <ctype.h>
-#include <stdlib.h>
-#include <map>
-#include <iterator>
-#include <iomanip>
-#include <algorithm>
-#include <climits>
-#include <numeric>
-#include <cmath>
-#include <queue>
-#include <assert.h>
+#include "client.hpp"
 
 #define debug_mode False
 #define WIN 0
@@ -88,10 +76,11 @@ void play_game() {
 	read(socket_id, message, 1024);
 	std::stringstream ss(message);
 	ss >> player_num >> num_stones >> num_cards;
-	std::cout << "Player number: " << player_num << " Number of stones: " << num_stones << " Number of Cards " << num_cards << std::endl;
+	std::cout << "Player number: " << player_num << " Number of stones: " << num_stones << " Number of Cards " << num_cards << endl;
 
 	// create bot
-	Bot b(player_num, num_stones, num_cards);
+	// Bot b(player_num, num_stones, num_cards);
+    Player player(num_stones, num_cards, player_num);
 
 	// the first player can make a move without getting state first
 	// the second needs to make an initial request
@@ -101,7 +90,8 @@ void play_game() {
 
 	// game loop (getstate, sendmove, check if game over, repeat)
 	while(num_stones > 0) {
-		send_move(b.calculate_move(num_stones));
+		// send_move(b.calculate_move(num_stones));
+        send_move(player.get_next_move(num_stones));
 		usleep(1000);
 		num_stones = get_state();
 	}
@@ -117,7 +107,7 @@ void socket_connect(int port) {
 	}
 	// set additional required connection info
 	server_address.sin_family = AF_INET;
-  server_address.sin_port = htons(port);
+    server_address.sin_port = htons(port);
 	// convert ip address to correct form
 	inet_pton(AF_INET, "localhost", &server_address.sin_addr);
 	// attempt connection
