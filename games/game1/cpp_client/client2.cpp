@@ -69,6 +69,7 @@ void play_game() {
 	// create bot
 	// Bot b(player_num, num_stones, num_cards);
     Player player(num_stones, num_cards, player_num);
+	player.strategy = SMALLEST;
 
 	// the first player can make a move without getting state first
 	// the second needs to make an initial request

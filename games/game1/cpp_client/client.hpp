@@ -122,7 +122,6 @@ class Player{
         int choices, turn_number;
         Simulation *simulator;
         bool debug_print;
-        const LOSS_STRATEGY strategy = BIGGEST;
     
     int random_loss_move(){
         return 0;
@@ -136,7 +135,6 @@ class Player{
             enemy_move = this->simulator->seen[new_choice];
             assert(enemy_move > LOSS);
             assert(this->simulator->check_choice(new_choice, enemy_move, this->turn_number + 1));
-            // biggest_enemy_move = max(enemy_move, biggest_enemy_move);
             if (biggest_enemy_move < enemy_move){
                 biggest_enemy_move = enemy_move;
                 my_move = i;
@@ -176,6 +174,8 @@ class Player{
         return 0;
     }
     public:
+        LOSS_STRATEGY strategy;
+        
         Player(int s, int k, int player_num){
             assert(s <= 200 && k <= 15);
             assert(player_num > 0 && player_num < 3);
@@ -190,6 +190,7 @@ class Player{
             this->cur_stones = this->s;
             this->turn_number = player_num - 3;
             this->debug_print = true;
+            this->strategy = BIGGEST;
         }
         ~Player(){
             delete this->simulator;
