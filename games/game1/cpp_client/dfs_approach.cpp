@@ -32,13 +32,14 @@ using namespace std;
 
 int main(int argc, char *argv[]){
 	fastIO;
-    int k = 13, s = 113, player_num = 1; // computer player
+    int k = 16, s = 13, player_num = 1; // computer player
     print_var(s);
     print_var(k);
     int cur_move, stones = s;
     if (player_num == 2){
         cout << "Player " << (player_num % 2 + 1) << " move: ";
         cin >> cur_move;
+        assert(cur_move <= k && cur_move > 0);
         stones -= cur_move;
     }
     if (stones == 0){
@@ -62,6 +63,7 @@ int main(int argc, char *argv[]){
         }
         cout << "player " << (player_num % 2 + 1) << " move: ";
         cin >> cur_move;
+        assert(cur_move <= k && cur_move > 0);
         stones -= cur_move;
         print_var(stones);
     }

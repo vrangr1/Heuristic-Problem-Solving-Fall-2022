@@ -142,7 +142,10 @@ class Player{
                 this->simulator->can_win(new_choice, this->cur_stones-i, this->turn_number + 1);
             }
             enemy_move = this->simulator->seen[new_choice];
-            if (enemy_move == LOSS) return i;
+            if (enemy_move == LOSS){
+                cout << "Oops!!! You shouldn't have made that move!\n";
+                return i;
+            }
             assert(enemy_move > LOSS);
             assert(this->simulator->check_choice(new_choice, enemy_move, this->turn_number + 1));
             if (biggest_enemy_move < enemy_move){
@@ -169,7 +172,10 @@ class Player{
                 this->simulator->can_win(new_choice, this->cur_stones-i, this->turn_number + 1);
             }
             enemy_move = this->simulator->seen[new_choice];
-            if (enemy_move == LOSS) return i; 
+            if (enemy_move == LOSS){
+                cout << "Oops!!! You shouldn't have made that move!\n";
+                return i;
+            }
             assert(enemy_move > LOSS);
             assert(this->simulator->check_choice(new_choice, enemy_move, this->turn_number + 1));
             if (smallest_enemy_move > enemy_move){

@@ -80,7 +80,7 @@ void play_game() {
 	while(num_stones > 0) {
 		// send_move(b.calculate_move(num_stones));
         send_move(player.get_next_move(num_stones));
-		usleep(1000);
+		usleep(5000);
 		num_stones = get_state();
 	}
 }
