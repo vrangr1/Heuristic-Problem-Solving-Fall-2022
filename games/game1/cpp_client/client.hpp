@@ -131,8 +131,18 @@ class Player{
         int new_choice, enemy_move, biggest_enemy_move = LOSS, my_move = -1;
         for (int i = this->k; i >= 1; --i){
             if (!this->simulator->check_choice(this->choices, i, this->turn_number)) continue;
+            if (this->cur_stones - i < 0){
+                if (my_move == -1)
+                    my_move = i;
+                continue;
+            }
             new_choice = this->simulator->get_new_choices(this->choices, i, this->turn_number);
             enemy_move = this->simulator->seen[new_choice];
+            if (enemy_move == NOT_PROCESSED){
+                this->simulator->can_win(new_choice, this->cur_stones-i, this->turn_number + 1);
+            }
+            enemy_move = this->simulator->seen[new_choice];
+            if (enemy_move == LOSS) return i;
             assert(enemy_move > LOSS);
             assert(this->simulator->check_choice(new_choice, enemy_move, this->turn_number + 1));
             if (biggest_enemy_move < enemy_move){
@@ -140,6 +150,7 @@ class Player{
                 my_move = i;
             }
         }
+        assert(my_move != -1);
         return my_move;
     }
 
@@ -147,8 +158,18 @@ class Player{
         int new_choice, enemy_move, smallest_enemy_move = this->k + 1, my_move = -1;
         for (int i = this->k; i >= 1; --i){
             if (!this->simulator->check_choice(this->choices, i, this->turn_number)) continue;
+            if (this->cur_stones - i < 0){
+                if (my_move == -1)
+                    my_move = i;
+                continue;
+            }
             new_choice = this->simulator->get_new_choices(this->choices, i, this->turn_number);
             enemy_move = this->simulator->seen[new_choice];
+            if (enemy_move == NOT_PROCESSED){
+                this->simulator->can_win(new_choice, this->cur_stones-i, this->turn_number + 1);
+            }
+            enemy_move = this->simulator->seen[new_choice];
+            if (enemy_move == LOSS) return i; 
             assert(enemy_move > LOSS);
             assert(this->simulator->check_choice(new_choice, enemy_move, this->turn_number + 1));
             if (smallest_enemy_move > enemy_move){
@@ -156,6 +177,7 @@ class Player{
                 my_move = i;
             }
         }
+        assert(my_move != -1);
         return my_move;
     }
 
@@ -175,7 +197,7 @@ class Player{
     }
     public:
         LOSS_STRATEGY strategy;
-        
+
         Player(int s, int k, int player_num){
             assert(s <= 200 && k <= 15);
             assert(player_num > 0 && player_num < 3);

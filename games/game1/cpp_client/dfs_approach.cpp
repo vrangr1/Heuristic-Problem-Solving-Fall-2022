@@ -32,7 +32,7 @@ using namespace std;
 
 int main(int argc, char *argv[]){
 	fastIO;
-    int k = 10, s = 35, player_num = 1; // computer player
+    int k = 13, s = 113, player_num = 1; // computer player
     print_var(s);
     print_var(k);
     int cur_move, stones = s;
