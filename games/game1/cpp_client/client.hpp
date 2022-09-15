@@ -1,3 +1,6 @@
+#ifndef CLIENT_HPP_
+#define CLIENT_HPP_
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -16,7 +19,7 @@
 #include <bitset>
 #include <chrono>
 #include <assert.h>
-
+#include "loss_heuristics.hpp"
 using namespace std;
 
 #define endl "\n"
@@ -39,9 +42,16 @@ template <typename t1, typename t2> void print(const pair<t1, t2> &p);
 #define LOSS 0
 #define debug_mode false
 
+enum LOSS_STRATEGY{
+    RANDOM,
+    BIGGEST,
+    SMALLEST
+};
+
 class Simulation{
-    
     public:
+        vector<si> seen;
+
         static void timer_func(bool in_seconds = false){
             static bool first = true;
             static auto start = chrono::high_resolution_clock::now();
@@ -57,9 +67,6 @@ class Simulation{
                 cout << "Time taken by function: " << duration.count() << " microseconds" << endl;
             start = chrono::high_resolution_clock::now();
         }
-        vector<si> seen;
-
-        
 
         inline int smallest_choice(int num, int turn_num){
             if (turn_num % 2) num &= 0b111111111111111;
@@ -93,7 +100,7 @@ class Simulation{
             else if (seen[match_key] != NOT_PROCESSED){
                 return seen[match_key];
             }
-            for (int i = 1; i <= 15; ++i){
+            for (int i = 15; i > 0; --i){
                 if (check_choice(choices, i, turn_number) && remainder - i >= 0){
                     int new_choices = get_new_choices(choices, i, turn_number);
                     if (!can_win(new_choices, remainder - i, turn_number + 1)){ //!seen[new_choice]
@@ -135,6 +142,59 @@ class Player{
         int choices, turn_number;
         Simulation *simulator;
         bool debug_print;
+        const LOSS_STRATEGY strategy = BIGGEST;
+    
+    int random_loss_move(){
+        
+    }
+
+    int biggest_loss_move(){
+        int new_choice, enemy_move, biggest_enemy_move = LOSS, my_move = -1;
+        for (int i = this->k; i >= 1; --i){
+            if (!this->simulator->check_choice(this->choices, i, this->turn_number)) continue;
+            new_choice = this->simulator->get_new_choices(this->choices, i, this->turn_number);
+            enemy_move = this->simulator->seen[new_choice];
+            assert(enemy_move > LOSS);
+            assert(this->simulator->check_choice(new_choice, enemy_move, this->turn_number + 1));
+            // biggest_enemy_move = max(enemy_move, biggest_enemy_move);
+            if (biggest_enemy_move < enemy_move){
+                biggest_enemy_move = enemy_move;
+                my_move = i;
+            }
+        }
+        return my_move;
+    }
+
+    int smallest_loss_move(){
+        int new_choice, enemy_move, smallest_enemy_move = this->k + 1, my_move = -1;
+        for (int i = this->k; i >= 1; --i){
+            if (!this->simulator->check_choice(this->choices, i, this->turn_number)) continue;
+            new_choice = this->simulator->get_new_choices(this->choices, i, this->turn_number);
+            enemy_move = this->simulator->seen[new_choice];
+            assert(enemy_move > LOSS);
+            assert(this->simulator->check_choice(new_choice, enemy_move, this->turn_number + 1));
+            if (smallest_enemy_move > enemy_move){
+                smallest_enemy_move = enemy_move;
+                my_move = i;
+            }
+        }
+        return my_move;
+    }
+
+    int optimal_loss_move(){
+        switch(this->strategy){
+            case RANDOM:
+                assert(false);
+                break;
+            case BIGGEST:
+                return biggest_loss_move();
+                break;
+            case SMALLEST:
+                return smallest_loss_move();
+                break;
+        }
+        return 0;
+    }
     public:
         Player(int s, int k, int player_num){
             assert(s <= 200 && k <= 15);
@@ -181,27 +241,34 @@ class Player{
             }
             else if (move == NOT_PROCESSED){
                 if (this->debug_print)
-                    cout << "processing\n";
+                cout << "processing\n";
                 this->simulator->can_win(this->choices, this->cur_stones, this->turn_number);
                 move = this->simulator->seen[this->choices];
                 assert(move >= LOSS);
-                // TODO: Write code for move == LOSS
-                assert(move != LOSS);
-                assert(this->simulator->check_choice(this->choices, move, this->turn_number));
-                this->cur_stones -= move;
-                this->choices = this->simulator->get_new_choices(this->choices, move, this->turn_number);
-                if (this->debug_print){
-                    print_var(move);
-                    print_var(this->cur_stones);
+                if (move > LOSS){
+                    assert(this->simulator->check_choice(this->choices, move, this->turn_number));
+                    this->cur_stones -= move;
+                    this->choices = this->simulator->get_new_choices(this->choices, move, this->turn_number);
+                    if (this->debug_print){
+                        print_var(move);
+                        print_var(this->cur_stones);
+                    }
+                    return move;
                 }
-                return move;
             }
-            // TODO: Write for the case of move == LOSS;
             assert(move == LOSS);
-            assert(false);
+            if (this->debug_print)
+            cout << "LOSS MOVE\n";
+            move = optimal_loss_move();
+            this->cur_stones -= move;
+            this->choices = this->simulator->get_new_choices(this->choices, move, this->turn_number);
+            if (this->debug_print){
+                print_var(move);
+                print_var(this->cur_stones);
+            }
+            return move;
         }
 };
-
 
 template <typename type> void print(const vector<vector<type> > &arr){
 	cout << "\n[";
@@ -263,3 +330,5 @@ template <typename t1, typename t2> void print(const vector<vector<pair<t1,t2> >
 template <typename t1, typename t2> void print(const pair<t1, t2> &p){
 	cout << "\n{" << p.first << "," << p.second << "}, Pair\n";
 }
+
+#endif
