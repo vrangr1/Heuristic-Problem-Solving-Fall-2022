@@ -1,3 +1,6 @@
 [submodule "games/game1/cardnimarchitect"]
 	path = games/game1/cardnimarchitect
 	url = https://github.com/HUNTINGHOUND/cardnimarchitect.git
+[submodule "games/game2/optimalTouringArchitect"]
+	path = games/game2/optimalTouringArchitect
+	url = https://github.com/Awesalot/optimalTouringArchitect.git
