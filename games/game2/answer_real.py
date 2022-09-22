@@ -157,43 +157,6 @@ class Path:
         
         return total_visit, total_value
 
-    # def print_get_valid_visit(self, visit_seq):
-    #     total_visit = []
-    #     total_value = 0
-    #     day, i = 1, 0
-
-    #     while day <= self.days and i < len(visit_seq):
-    #         time = 0
-    #         prev = None
-    #         visit = []
-    #         while time < 24 and i < len(visit_seq):
-    #             site = visit_seq[i]
-                
-    #             # If starting site, otherwise travel time
-    #             time_to_site = 0 if prev is None else (abs(self.x[site] - self.x[prev]) + abs(self.y[site] - self.y[prev]))/60
-    #             time_at_site = self.time[site]/60.0
-                
-    #             #TODO: Check this
-    #             if not self.latest_start[site][day] or (time + time_to_site) > self.latest_start[site][day]:
-    #                 i += 1
-    #                 break
-
-    #             if time + time_to_site < self.start[site][day]:
-    #                 time = self.start[site][day]
-    #             else:
-    #                 time += time_to_site
-    #             print("Site", site," CurTime", "{:.2f}".format(time), "Value ",self.val[site], " ", "Latest start", "{:.2f}".format(self.latest_start[site][day]), " Timeatsite", "{:.2f}".format(self.time[site]))
-    #             time = time + time_at_site
-    #             visit.append(site)
-    #             total_value += self.val[site]
-                
-    #             i += 1
-    #             prev = site
-            
-    #         total_visit.append(visit)
-    #         day += 1
-
-
     # TODO: Add another loop for 3-opt
     def two_opt(self, path):
         best, max_val, res = path, 0, None
@@ -215,22 +178,10 @@ class Path:
                         max_val = val
                         res = ans
                         improved = True
-                    else:
-                        for k in range(j+1, len(path)):
-                            if (timer() - self.start_time) > 110: 
-                                break
-                            new_path = path[:i] + path[i:j+1][::-1] + path[j+1:k+1][::-1] + path[k+1:]
-                            ans, val = self.get_valid_visit(new_path)
-                            if val > max_val:
-                                best = new_path
-                                max_val = val
-                                res = ans
-                                improved = True
-
 
             path = best
-            print("Max:", max_val)
-        # self.print_get_valid_visit(best)
+            # print("Max:", max_val)
+
         return res
 
     def return_mst_path(self):
@@ -249,7 +200,8 @@ def main():
     start_time = timer()
     lines = sys.stdin.readlines()
     path = Path(start_time, lines)
-
+    # path.get_sites_and_days(lines)
+    # path.get_input(lines)
     path.set_up_mst()
     ans = path.return_mst_path()
 
@@ -257,7 +209,7 @@ def main():
         print(*day)
 
     end_time = timer()
-    print("Time taken to run code:", end_time - start_time)
+    # print("Time taken to run code:", end_time - start_time)
 
 if __name__ == '__main__':
     main()
