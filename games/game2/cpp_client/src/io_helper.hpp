@@ -20,6 +20,7 @@ using namespace std;
 template <typename type> void print(const vector<vector<type> > &arr);
 template <typename type> void print(const vector<type> &arr);
 template <typename type> void off_print(const vector<type> &arr);
+template <typename type> void off_print(const vector<vector<type> > &arr);
 template <typename t1, typename t2> void print(const vector<pair<t1,t2> > &arr);
 template <typename t1, typename t2> void print(const vector<vector<pair<t1,t2> > > &arr);
 template <typename t1, typename t2> void print(const pair<t1, t2> &p);
@@ -100,10 +101,17 @@ template <typename type> void print(const vector<type> &arr){
 	cout << "], 1D Vector\n";
 }
 
+
 template <typename type> void off_print(const vector<type> &arr){
 	forn(i, arr.size())
 		cout << arr[i] << " ";
 	cout << endl;
+}
+
+
+template <typename type> void off_print(const vector<vector<type> > &arr){
+	forn(i, arr.size())
+		off_print(arr[i]);
 }
 
 

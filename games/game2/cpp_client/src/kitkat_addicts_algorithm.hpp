@@ -91,11 +91,6 @@ class Path{
                 while(time < 24 && i < visit_seq.size()){
                     site = visit_seq[i];
 
-                    // Fill gaps, doesn't increment i
-                    if (time < this->start[site][day]){
-                        time = this->start[site][day];
-                        continue;
-                    }
                     // If starting site, otherwise travel time
                     time_to_site = ((prev == NOT_DEFINED)? 0 : \
                         ((abs(this->x[site] - this->x[prev]) + abs(this->y[site] - this->y[prev]))/60.0));
@@ -104,11 +99,17 @@ class Path{
                     total_site_time = time + time_to_site + time_at_site;
 
                     // TODO: Check this
-                    if(this->latest_start[site][day] == NOT_DEFINED || total_site_time > this->end[site][day]){
+                    if(this->latest_start[site][day] == NOT_DEFINED || (time + time_to_site) > this->latest_start[site][day]){
                         i++;
                         break;
                     }
-                    time = ((int)total_site_time);
+
+                    if (time + time_to_site < this->start[site][day])
+                        time = this->start[site][day];
+                    else time += time_to_site;
+                    // time = ((int)total_site_time);
+                    time += time_at_site;
+
                     visit.push_back(site);
                     total_value += this->val[site];
                     i++;
@@ -142,19 +143,15 @@ class Path{
                         double value = 0;
                         vector<vector<int> > ans = get_valid_visit(new_path, value);
                         if (value > max_val){
-                            best_path.clear();
-                            copy(new_path.begin(), new_path.end(), back_inserter(best_path));
+                            best_path = new_path;
                             max_val = value;
-                            // res.clear();
-                            // copy(ans.begin(), ans.end(), back_inserter(res));// TODO: check this
                             res = ans;
                             improved = true;
                         }
                     }
                 }
-                path.clear();
-                copy(best_path.begin(), best_path.end(), back_inserter(path));
-                print_var(max_val);
+                // print_var(max_val);
+                path = best_path;
             }
             return res;
         }
@@ -168,8 +165,6 @@ class Path{
         {
             assert(this->sites > 0);
             assert(this->days > 0);
-            print_var(this->sites);
-            print_var(this->days);
             this->mst.clear();
             get_input();
         }
@@ -179,7 +174,6 @@ class Path{
             for (int src = 1; src <= this->sites; ++src){
                 for (int dest = src + 1; dest <= this->sites; ++dest){
                     int dist = abs(this->x[dest] - this->x[src]) + abs(this->y[dest] - this->y[src]);
-                    // TODO: Fix the following
                     vector<int> temp;
                     temp.push_back(src);
                     temp.push_back(dest);

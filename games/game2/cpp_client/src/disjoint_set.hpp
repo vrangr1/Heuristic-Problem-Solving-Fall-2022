@@ -12,7 +12,7 @@ class DisjointSet{
         DisjointSet(int n){
             for (int i = 0; i < n; ++i){
                 this->parent.push_back(i);
-                this->rank.push_back(i);
+                this->rank.push_back(1);
             }
         }
 

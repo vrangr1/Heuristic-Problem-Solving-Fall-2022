@@ -6,7 +6,8 @@
     exit
 #endif
 
-#include "kitkat_addicts_algorithm.hpp"
+// #include "kitkat_addicts_algorithm.hpp"
+#include "src/kitkat_addicts_algorithm.hpp"
 
 
 int main(){
@@ -14,9 +15,10 @@ int main(){
     IOClass io;
     Path path(io.sites, io.days, start_time, io.lines);
     path.set_up_mst();
-    print(path.mst[2]);
-    // vector<vector<int> > ans = path.return_mst_path();
+    // print(path.mst[47]);
+    vector<vector<int> > ans = path.return_mst_path();
     // print(ans);
-    time_elapsed(false, true);
+    off_print(ans);
+    // time_elapsed(false, true);
     return 0;
 }
