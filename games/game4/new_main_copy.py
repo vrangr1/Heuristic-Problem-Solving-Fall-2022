@@ -81,7 +81,7 @@ class AmbulancePickup:
         sorted_ambulance.sort(key = lambda x: x[0])
 
         hospital_locations_new = [None for _ in range(len(hospital_locations))]
-
+        self.cluster = {sorted_ambulance[i][1]: np.where(kmeans.labels_ == i)[0].tolist() for i in range(self.num_hospitals)}
         counter = Counter(kmeans.labels_)
         for i, (hidx, _) in enumerate(counter.most_common()):
             hospital_locations_new[sorted_ambulance[i][1]] = hospital_locations[hidx]
@@ -157,30 +157,34 @@ class AmbulancePickup:
                 score-=self.rescue_time[person]
         return new_path, score
 
-    # def get_path(self, current_ambulance, saved):
-    #     num_persons = len(self.x_loc)
-    #     best_score = -10000
-    #     best_path = []
-    #     destinations = [i for i in range(self.num_hospitals)]
-    #     for i, j, k, l in itertools.permutations(range(num_persons)+1, 4): # The +1 is to not include it
-    #         temp_path = []
-    #         if i != num_persons and i not in saved:
-    #             temp_path.append(i)
-    #         if j != num_persons and j not in saved:
-    #             temp_path.append(j)
-    #         if k != num_persons and k not in saved:
-    #             temp_path.append(k)
-    #         if l != num_persons and l not in saved:
-    #             temp_path.append(l)
-    #         if len(temp_path) == 0:
-    #             continue
-    #         new_path, new_score = path_time(self, current_ambulance, path, hospital, best_score)
-    #         if new_score > best_score:
-    #             best_path = new_path
-    #             best_score = new_score
-    #         if (timer() - timer_start) > self.max_cpu_time: 
-    #             break
-    #     return best_path
+    def get_path(self, current_ambulance, saved):
+        num_persons = len(self.x_loc)
+        best_score = -10000
+        best_path = []
+        best_hospital = 0
+        destinations = [i for i in range(self.num_hospitals)]
+        print(self.cluster[current_ambulance[3]])
+        for i, j, k, l in permutations(self.cluster[current_ambulance[3]]+[301], 4): # The +1 is to not include it
+            temp_path = []
+            if i != 301 and i not in saved:
+                temp_path.append(i)
+            if j != 301 and j not in saved:
+                temp_path.append(j)
+            if k != 301 and k not in saved:
+                temp_path.append(k)
+            if l != 301 and l not in saved:
+                temp_path.append(l)
+            if len(temp_path) == 0:
+                continue
+            for hospital in destinations:
+                new_path, new_score = self.path_time(current_ambulance, temp_path, hospital, best_score)
+                if new_score > best_score:
+                    best_path = new_path
+                    best_score = new_score
+                    best_hospital = hospital
+            if (timer() - timer_start) > self.max_cpu_time: 
+                break
+        return best_path, best_hospital
 
     def calculate_time(self, current_ambulance, path, hospital):
         cur_time, cur_x, cur_y = current_ambulance[0], current_ambulance[1], current_ambulance[2]
@@ -205,51 +209,64 @@ class AmbulancePickup:
         
         ambulance_heap = self.ambulances
         heapq.heapify(ambulance_heap)
-
+        idx = 0
         while len(ambulance_heap) > 0:
+            print("Idx ", idx)
+            idx+=1
             current_ambulance = heapq.heappop(ambulance_heap)
             cur_time, cur_x, cur_y = current_ambulance[0], current_ambulance[1], current_ambulance[2]
             start, end, path = current_ambulance[3], current_ambulance[3], []   # index of hospital of ambulance
             start_time = cur_time
             destinations = [i for i in range(self.num_hospitals)]
-            # path = self.get_path(current_ambulance, saved)
-            
-            for _ in range(10):
-                found = False
-                for person, destinations, _ in self.get_persons_savable(path, cur_time, cur_x, cur_y, destinations):
-                    hospital = destinations[0]
-                    if person not in saved:
-                        # print("Ambulance: {0}, Person: {1}, Destinations: {2}".format(ambulance_idx+1, person+1, destinations))
-                        found = True
-                        saved.add(person)
-                        path.append(person)
-                        score += 1
-                        x, y = self.x_loc[person], self.y_loc[person]
-                        hospital_x, hospital_y = self.hospital_locations[hospital]
-                        time_to_person = abs(x - cur_x) + abs(y - cur_y)
-                        cur_time = cur_time + time_to_person + self.load_time_per_person
-                        cur_x, cur_y = x, y
-                        end = hospital
-
-                        if len(path) == 4:
-                            time_to_hospital = abs(cur_x - hospital_x) + abs(cur_y - hospital_y)
-                            cur_time = cur_time + time_to_hospital + self.unload_time
-                            cur_x, cur_y = hospital_x, hospital_y
-
-                            result.append((start, end, path, start_time))
-                            actual_time = self.calculate_time(current_ambulance, path, hospital)
-                            heapq.heappush(ambulance_heap, (actual_time, cur_x, cur_y, hospital))
-                            path, start = [], hospital
-                            found = False # Exit loop, max 4 found
-                        break
-                    
-                if not found:
-                    break
-
+            path, hospital = self.get_path(current_ambulance, saved)
             if len(path) > 0:
+                for person in path:
+                    saved.add(person)
+                    score+=1
                 result.append((start, end, path, start_time))
                 actual_time = self.calculate_time(current_ambulance, path, hospital)
                 heapq.heappush(ambulance_heap, (actual_time, cur_x, cur_y, hospital))
+            if (timer() - timer_start) > self.max_cpu_time: 
+                break
+
+
+
+            # for _ in range(10):
+            #     found = False
+            #     for person, destinations, _ in self.get_persons_savable(path, cur_time, cur_x, cur_y, destinations):
+            #         hospital = destinations[0]
+            #         if person not in saved:
+            #             # print("Ambulance: {0}, Person: {1}, Destinations: {2}".format(ambulance_idx+1, person+1, destinations))
+            #             found = True
+            #             saved.add(person)
+            #             path.append(person)
+            #             score += 1
+            #             x, y = self.x_loc[person], self.y_loc[person]
+            #             hospital_x, hospital_y = self.hospital_locations[hospital]
+            #             time_to_person = abs(x - cur_x) + abs(y - cur_y)
+            #             cur_time = cur_time + time_to_person + self.load_time_per_person
+            #             cur_x, cur_y = x, y
+            #             end = hospital
+
+            #             if len(path) == 4:
+            #                 time_to_hospital = abs(cur_x - hospital_x) + abs(cur_y - hospital_y)
+            #                 cur_time = cur_time + time_to_hospital + self.unload_time
+            #                 cur_x, cur_y = hospital_x, hospital_y
+
+            #                 result.append((start, end, path, start_time))
+            #                 actual_time = self.calculate_time(current_ambulance, path, hospital)
+            #                 heapq.heappush(ambulance_heap, (actual_time, cur_x, cur_y, hospital))
+            #                 path, start = [], hospital
+            #                 found = False # Exit loop, max 4 found
+            #             break
+                    
+            #     if not found:
+            #         break
+
+            # if len(path) > 0:
+            #     result.append((start, end, path, start_time))
+            #     actual_time = self.calculate_time(current_ambulance, path, hospital)
+            #     heapq.heappush(ambulance_heap, (actual_time, cur_x, cur_y, hospital))
 
         return score, result
 

@@ -80,6 +80,7 @@ class Hospital:
         if self.num_amb == 0:
             raise IllegalPlanError('No ambulance left at the hospital %s.' % self)
         else:
+            self.amb_time.sort()
             if self.amb_time[0] > start_time:
                 raise IllegalPlanError('No ambulance left at hospital %s at the start time %d minutes.' % (self, start_time))
         if 4 < len(pers):
