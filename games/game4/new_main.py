@@ -21,7 +21,7 @@ class AmbulancePickup:
 
         self.load_time_per_person = 1
         self.unload_time = 1
-        self.max_cpu_time = 40
+        self.max_cpu_time = 90
 
         # computed
         self.num_hospitals = 0
@@ -69,11 +69,11 @@ class AmbulancePickup:
 
     def assign_cluster(self):
         kmeans = KMeans(n_clusters=self.num_hospitals, random_state=0).fit(self.people_locations)
-        print("Kmeans ", kmeans.labels_)
+        # print("Kmeans ", kmeans.labels_)
         
         # assign hospital locations
         hospital_locations = kmeans.cluster_centers_.astype(int)
-        print("Hospital Locations initial",hospital_locations)
+        # print("Hospital Locations initial",hospital_locations)
 
         sorted_ambulance = []
         for i, count in enumerate(self.num_ambulance_at_hospital):
@@ -94,7 +94,7 @@ class AmbulancePickup:
                 ambulances.append((0, x, y, hospital_idx))
         
         self.ambulances = ambulances
-        print("Ambulances", ambulances)
+        # print("Ambulances", ambulances)
 
     def get_persons_savable(self, cur_selected, cur_time, cur_x, cur_y, allowed_destinations):
         savable = []
@@ -105,7 +105,7 @@ class AmbulancePickup:
             if cur_time > rescue_time:
                 continue
             destinations = []
-            total_rescue_time_left = 0
+
             for hospital_idx in allowed_destinations:
                 hospital_x, hospital_y = self.hospital_locations[hospital_idx]
 
@@ -121,66 +121,13 @@ class AmbulancePickup:
                         break
                 
                 if is_valid and estimated_time <= rescue_time:
-                    total_rescue_time_left+= rescue_time
                     destinations.append(hospital_idx)
-                    # savable.append((person_idx, hospital_idx))
         
             if len(destinations) > 0:
-                savable.append((person_idx, destinations, total_rescue_time_left))
+                savable.append((person_idx, destinations))
 
-        return sorted(savable, key=lambda a: abs(self.x_loc[a[0]] - cur_x) + abs(self.y_loc[a[0]] - cur_y) + self.rescue_time[a[0]])
+        return sorted(savable, key=lambda a: (abs(self.x_loc[a[0]] - cur_x) + abs(self.y_loc[a[0]] - cur_y))/0.5 + self.rescue_time[a[0]] + random.randint(0, 5))
         # return sorted(savable, key=lambda x: x[2])
-
-    def path_time(self, current_ambulance, path, hospital, best_score):
-        cur_time, cur_x, cur_y = current_ambulance[0], current_ambulance[1], current_ambulance[2]
-        hospital_x, hospital_y = self.hospital_locations[hospital]
-        new_path = []
-        for person in path:
-            if cur_time > self.rescue_time[person]:
-                continue
-            x, y = self.x_loc[person], self.y_loc[person]
-            time_to_person = abs(x - cur_x) + abs(y - cur_y)
-            new_time = cur_time + time_to_person + self.load_time_per_person
-            if new_time > self.rescue_time[person]:
-                continue
-            new_path.append(person)
-            cur_time = new_time
-            cur_x, cur_y = x, y
-
-        time_to_hospital = abs(cur_x - hospital_x) + abs(cur_y - hospital_y)
-        cur_time = cur_time + time_to_hospital + self.unload_time
-        score = len(new_path) * 1000 - (cur_time)
-        for person in new_path:
-            if cur_time > self.rescue_time[person]:
-                score-=1000
-            else:
-                score-=self.rescue_time[person]
-        return new_path, score
-
-    # def get_path(self, current_ambulance, saved):
-    #     num_persons = len(self.x_loc)
-    #     best_score = -10000
-    #     best_path = []
-    #     destinations = [i for i in range(self.num_hospitals)]
-    #     for i, j, k, l in itertools.permutations(range(num_persons)+1, 4): # The +1 is to not include it
-    #         temp_path = []
-    #         if i != num_persons and i not in saved:
-    #             temp_path.append(i)
-    #         if j != num_persons and j not in saved:
-    #             temp_path.append(j)
-    #         if k != num_persons and k not in saved:
-    #             temp_path.append(k)
-    #         if l != num_persons and l not in saved:
-    #             temp_path.append(l)
-    #         if len(temp_path) == 0:
-    #             continue
-    #         new_path, new_score = path_time(self, current_ambulance, path, hospital, best_score)
-    #         if new_score > best_score:
-    #             best_path = new_path
-    #             best_score = new_score
-    #         if (timer() - timer_start) > self.max_cpu_time: 
-    #             break
-    #     return best_path
 
     def calculate_time(self, current_ambulance, path, hospital):
         cur_time, cur_x, cur_y = current_ambulance[0], current_ambulance[1], current_ambulance[2]
@@ -196,14 +143,14 @@ class AmbulancePickup:
         cur_time = cur_time + time_to_hospital + self.unload_time
         return cur_time
 
-    def find_core_solution(self):
+    def find_core_solution(self, ambulance_perm):
         self.final_timings = []
         result = []
         
         saved = set()
         score = 0
         
-        ambulance_heap = self.ambulances
+        ambulance_heap = list(ambulance_perm)
         heapq.heapify(ambulance_heap)
 
         while len(ambulance_heap) > 0:
@@ -216,8 +163,8 @@ class AmbulancePickup:
             
             for _ in range(10):
                 found = False
-                for person, destinations, _ in self.get_persons_savable(path, cur_time, cur_x, cur_y, destinations):
-                    hospital = destinations[0]
+                for person, stored_destinations in self.get_persons_savable(path, cur_time, cur_x, cur_y, destinations):
+                    hospital = stored_destinations[0]
                     if person not in saved:
                         # print("Ambulance: {0}, Person: {1}, Destinations: {2}".format(ambulance_idx+1, person+1, destinations))
                         found = True
@@ -249,20 +196,21 @@ class AmbulancePickup:
             if len(path) > 0:
                 result.append((start, end, path, start_time))
                 actual_time = self.calculate_time(current_ambulance, path, hospital)
+                cur_x, cur_y = self.hospital_locations[hospital]
                 heapq.heappush(ambulance_heap, (actual_time, cur_x, cur_y, hospital))
 
         return score, result
 
     def find_best_solution_permutations(self):
-        ambulances_list = [i for i in range(len(self.ambulances))]
-        permute_amb = permutations(ambulances_list)
+        # ambulances_list = [i for i in range(len(self.ambulances))]
+        permute_amb = permutations(self.ambulances)
         # print("Length of permutations", permute_amb)
         max_score, best_result = 0, None
         for idx, ambulances in enumerate(permute_amb):
             # print(ambulances``)
             if (timer() - timer_start) > self.max_cpu_time: 
                 break
-            score, result = self.find_solution(ambulances)
+            score, result = self.find_core_solution(ambulances)
             if score > max_score:
                 max_score = score
                 best_result = result
@@ -270,7 +218,7 @@ class AmbulancePickup:
         return best_result
 
     def find_best_solution_two_opt(self):
-        ambulances_list = [i for i in range(len(self.ambulances))]
+        ambulances_list = list(self.ambulances)
         max_score, best_result = 0, None
         improved = True
       
@@ -282,12 +230,13 @@ class AmbulancePickup:
                     if (timer() - timer_start) > self.max_cpu_time: break
                     if j - i == 0: continue
                     ambulances = self.swap_2opt(ambulances_list, i, j)
-                    score, result  = self.find_solution(ambulances)
+                    score, result  = self.find_core_solution(ambulances)
                     if score > max_score:
                         print("Improved")
                         max_score = score
                         best_result = result
                         improved = True
+                    print("Update is {0}, {1}".format(i*len(ambulances_list) + j, max_score))
         
         return best_result
 
@@ -301,7 +250,7 @@ class AmbulancePickup:
       return route[:i] + route[i:j+1][::-1] + route[j+1:]
 
     def generate_output(self):
-        with open("kitkataddicts.txt", "w") as f:
+        with open("Outputs/kitkataddicts.txt", "w") as f:
 
             # print hospitals info
             for hospital_idx in range(self.num_hospitals):
@@ -313,7 +262,7 @@ class AmbulancePickup:
 
             # print path info
             # result = self.find_best_solution_two_opt()
-            result = self.find_best_solution()
+            result = self.find_best_solution_two_opt()
             # result.sort(key=lambda x: x[0])
             print(result)
             for start, end, path, time in result:
