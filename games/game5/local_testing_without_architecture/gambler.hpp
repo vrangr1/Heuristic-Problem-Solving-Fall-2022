@@ -36,10 +36,11 @@ private:
     static void log_data(const int &player_wealth){
         previous_wealth = current_wealth;
         current_wealth = player_wealth;
-        pulls[pull_count]->won = (current_wealth > previous_wealth);
-        if (pulls[pull_count]->won) wins_losses[pulls[pull_count]->slot].first += 1;
-        else wins_losses[pulls[pull_count]->slot].second += 1;
         assert(pulls.size() == pull_count);
+        bet_data *last_bet = pulls[pull_count - 1];
+        last_bet->won = (current_wealth > previous_wealth);
+        if (last_bet->won) wins_losses[last_bet->slot].first += 1;
+        else wins_losses[last_bet->slot].second += 1;
     }
 
     static void log_pull(bet_data *current_bet){
