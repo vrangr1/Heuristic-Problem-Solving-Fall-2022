@@ -24,7 +24,7 @@ public:
         starting_wealth = player_wealth;
         expected_wealth = player_wealth;
         prev_turn_wealth = player_wealth;
-        number_of_pulls = 100 * slot_count;
+        number_of_pulls = 500 * slot_count;
         // TODO: Greater than slot_count/10
         winning_slot = min((double)slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count)));
         return winning_slot;
@@ -53,7 +53,7 @@ public:
         if (turn_number%100 == 0){
             cout<< "command "<< turn_number << "\n";
         }
-        int diff = floor(((double)number_of_pulls)/((double)total_casino_switch));
+        int diff = floor(((double)number_of_pulls)/((double)total_casino_switch + 1));
         if (turn_number % diff == 0){
             cout << "command Turn_number "<< turn_number << " Diff is " << diff << "\n";
             return min((double)slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count))); 
