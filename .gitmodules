@@ -4,6 +4,6 @@
 [submodule "games/game2/optimalTouringArchitect"]
 	path = games/game2/optimalTouringArchitect
 	url = https://github.com/Awesalot/optimalTouringArchitect.git
-[submodule "games/game5/Bandit"]
-	path = games/game5/Bandit
-	url = https://github.com/xiaotanker/Bandit.git
+[submodule "games/game5/bandit-game-architecture"]
+	path = games/game5/bandit-game-architecture
+	url = https://github.com/Jkker/bandit-game-architecture.git
