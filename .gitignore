@@ -2,3 +2,6 @@
 *.txt
 *.pycache
 *.pyc
+games/game1/*
+games/game4/HPS-ambulance-pickup-architecture/*
+
