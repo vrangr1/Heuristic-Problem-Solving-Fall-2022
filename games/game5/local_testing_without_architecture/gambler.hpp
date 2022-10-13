@@ -54,12 +54,13 @@ private:
     }
 
     static void egreedy_logging(){
+        if (pull_count == 0) return;
         int last_slot = pulls[pull_count - 1]->slot;
         probabilities[last_slot] = get_expected_reward(last_slot);
     }
 
     static void ucb_logging(){
-
+        return;
     }
 
     static void common_beginning_setup(const int &player_wealth, const int &slot_count, const int &pull_budget){
@@ -101,13 +102,13 @@ private:
 
     static bet_data* egreedy_strategy(){
         // basic epsilon-greedy strategy while not accounting for slot shifts
-        bet_data *bet = new bet_data();
-        bet->bet = 1;
+        bet_data *current_bet = new bet_data();
+        current_bet->bet = 1;
         if (get_random() < epsilon)
-            bet->slot = get_random_range(slots);
+            current_bet->slot = get_random_range(slots);
         else
-            bet->slot = get_index_highest_value(probabilities);
-        return bet;
+            current_bet->slot = get_index_highest_value(probabilities);
+        return current_bet;
     }
 
     static bet_data* ucb_strategy(){
@@ -123,6 +124,7 @@ private:
         // Decide current bet
         current_bet = call_strategy_function(&egreedy_strategy, &ucb_strategy);
         print_itr(current_bet);
+        
         // Log the current bet
         log_pull(current_bet);
         return make_pair(current_bet->slot, current_bet->bet);

@@ -40,8 +40,9 @@ class Gambler{
 	Gambler(int given_slots) : slots(given_slots), max_k(given_slots / 7), pulls_record(given_slots + 1, 0){}
 
 	void gambler_player(void (BanditGame::*function)(int, int), BanditGame &game){
-		pair<int,int> current_bet = gambler::get_return_data(game.get_tokens(), 0, 0);
-		(game.*function)(current_bet.second, current_bet.first);
+		pair<int,int> current_bet = gambler::get_return_data(game.get_tokens(), s, 500*s);
+		print(current_bet);
+		(game.*function)(current_bet.second, current_bet.first + 1);
 	}
 };
 
