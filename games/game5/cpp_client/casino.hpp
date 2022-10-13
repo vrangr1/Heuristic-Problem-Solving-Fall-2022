@@ -26,11 +26,12 @@ public:
         prev_turn_wealth = player_wealth;
         number_of_pulls = 100 * slot_count;
         // TODO: Greater than slot_count/10
-        winning_slot = min(slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count)));
+        winning_slot = min((double)slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count)));
         return winning_slot;
     }
     
     static int my_func(int switch_budget, int slot_count, int player_wealth, int player_switched){
+        return simple_my_func(switch_budget, slot_count, player_wealth, player_switched);
         turn_number++;
         int change = player_wealth - prev_turn_wealth;
         int tokens_bet = abs(change);
@@ -42,16 +43,16 @@ public:
             number_of_loss++;
             expected_wealth = -tokens_bet*((slot_count-1)*0.53 + (1) * 0.4)/100;
         }
-        bias = player_wealth - expected_wealth;
+        int bias = player_wealth - expected_wealth;
 
         return 0;
     }
 
     static int simple_my_func(int switch_budget, int slot_count, int player_wealth, int player_switched){
         turn_number++;
-        int diff = floor(((double)number_of_pulls)/((double)total_casino_switch))
+        int diff = floor(((double)number_of_pulls)/((double)total_casino_switch));
         if (diff % turn_number == 0){
-            return min(slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count))); 
+            return min((double)slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count))); 
         }
         return 0;
     }

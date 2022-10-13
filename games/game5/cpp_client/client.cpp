@@ -45,7 +45,7 @@ Returns:
 	-	initial winning slot number in range [1, slot_count] */
 int Client::casino_action_init(int switch_budget, int slot_count, int player_wealth)
 {
-	return casino::init_func();
+	return casino::init_func(switch_budget, slot_count, player_wealth);
 }
 
 /* Called after the player has pulled the lever of a slot machine
@@ -60,7 +60,7 @@ Returns:
 	-	`0` if not switching OR winning slot number in range [1, slot_count] */
 int Client::casino_action(int switch_budget, int slot_count, int player_wealth, int player_switched)
 {
-	return casino::my_func();
+	return casino::my_func(switch_budget, slot_count, player_wealth, player_switched);
 }
 
 /* Called when the player can pull the lever of a slot machine
