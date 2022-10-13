@@ -54,7 +54,7 @@ private:
     }
 
     static void egreedy_logging(){
-        int last_slot = pulls[pull_count]->slot;
+        int last_slot = pulls[pull_count - 1]->slot;
         probabilities[last_slot] = get_expected_reward(last_slot);
     }
 
@@ -122,7 +122,7 @@ private:
         
         // Decide current bet
         current_bet = call_strategy_function(&egreedy_strategy, &ucb_strategy);
-        
+        print_itr(current_bet);
         // Log the current bet
         log_pull(current_bet);
         return make_pair(current_bet->slot, current_bet->bet);

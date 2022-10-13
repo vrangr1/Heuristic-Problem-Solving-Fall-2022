@@ -6,7 +6,7 @@
     exit
 #endif
 
-#include "setup.hpp"
+// #include "setup.hpp"
 #include "gambler.hpp"
 
 const int s = 100, k = 10;

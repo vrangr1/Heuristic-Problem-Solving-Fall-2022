@@ -6,10 +6,12 @@
 #include <random>
 #include <set>
 #include <assert.h>
+#include "setup.hpp"
 #define NOT_DEFINED1 -97293
 
 #define endl "\n"
 // #define print_var(x) cout << #x << ": " << x << endl;
+#define print_itr(x) cout << #x << ": " << *x << endl;
 
 using namespace std;
 
@@ -37,6 +39,18 @@ public:
         this->bet = bet;
         this->slot = slot;
         this->won = false;
+    }
+
+    friend ostream& operator<<(ostream& os, bet_data const & bet_data) {
+        os << "bet: " << bet_data.bet << endl;
+        os << "slot: " << bet_data.slot << endl;
+        return os;
+        // return os << "I'm a friend of the class, msg=" << tc.msg << endl;
+    }
+    void print(){
+        cout << "printing bet";
+        print_var(bet);
+        print_var(slot);
     }
 };
 
