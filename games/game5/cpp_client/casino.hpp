@@ -50,8 +50,12 @@ public:
 
     static int simple_my_func(int switch_budget, int slot_count, int player_wealth, int player_switched){
         turn_number++;
+        if (turn_number%100 == 0){
+            cout<< "command "<< turn_number << "\n";
+        }
         int diff = floor(((double)number_of_pulls)/((double)total_casino_switch));
-        if (diff % turn_number == 0){
+        if (turn_number % diff == 0){
+            cout << "command Turn_number "<< turn_number << " Diff is " << diff << "\n";
             return min((double)slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count))); 
         }
         return 0;
