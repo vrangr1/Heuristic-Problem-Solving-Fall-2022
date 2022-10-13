@@ -74,8 +74,7 @@ Returns:
 															bet_amount is in range[1, player_wealth] */
 pair<int, int> Client::player_action(int player_wealth, int slot_count, int pull_budget)
 {
-	// return make_pair(0, 0);
-	return gambler::get_return_data(player_wealth, slot_count, pull_budget); // returns slot, bet
+	return gambler::get_return_data(player_wealth, slot_count, pull_budget); // returns (slot, bet)
 }
 
 void Client::start()
