@@ -3,6 +3,8 @@
 #include "gambler_helper.hpp"
 #include "fenwick_tree.hpp"
 
+#define PROB_THRESH 0.56L
+
 class gambler{
 private:
     static int slots, k_max, total_wealth, current_wealth, total_pull_budget, current_pull_budget, previous_wealth, pull_count;
@@ -20,6 +22,7 @@ private:
     static vector<double> fenwick_tree;
     static vector<double> short_history_probabilities, confidence;
     static vector<int> counts;
+    static vector<int> upset_counts;
 
     static void call_strategy_function(void (*egreedy)(), void (*ucb)(), void (*mod)()){
         switch(STRATEGY){
@@ -137,13 +140,15 @@ private:
     static void mod_strategy_setup(){
         // TODO: Tune these parameters
         // depth, history length setup
-        history_length = 20;
         depth = max(15, total_pull_budget / (slots * k_max));
-        print_var(depth);
+        history_length = 500;
+        // print_var(depth);
 
         // counts setup
         counts.clear();
         counts.resize(slots, 0);
+        upset_counts.clear();
+        upset_counts.resize(slots, 0);
 
         // short_history_data setup
         short_history_data.clear();
@@ -165,19 +170,24 @@ private:
         
         // total_sum setup
         total_sum = ((double)(depth * slots)) * 0.01L;
-        print_var(total_sum);
+        // print_var(total_sum);
         double temp_sum = get_sum(fenwick_tree, slots - 1);
-        print_var(temp_sum);
+        // print_var(temp_sum);
 
+        probabilities.clear();
+        probabilities.resize(slots, 0.0);
         
         assert(abs(total_sum - temp_sum) < 0.1);
     }
 
     // counts, short_history_data, total_sum, fenwick_tree, short_history_probabilities, confidence
     static void mod_reset(){
+        cout << "SWITCHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
         // counts setup
         counts.clear();
         counts.resize(slots, 0);
+        upset_counts.clear();
+        upset_counts.resize(slots, 0);
 
         // short_history_data setup
         short_history_data.clear();
@@ -185,6 +195,11 @@ private:
 
         short_history_probabilities.clear();
         short_history_probabilities.resize(slots, 0.0);
+
+        wins_losses.clear();
+        wins_losses.resize(slots, make_pair(0, 0));
+        probabilities.clear();
+        probabilities.resize(slots, 0.0);
         
         // fenwick tree setup
         fenwick_tree.clear();
@@ -199,9 +214,9 @@ private:
         
         // total_sum setup
         total_sum = ((double)(depth * slots)) * 0.01L;
-        print_var(total_sum);
+        // print_var(total_sum);
         double temp_sum = get_sum(fenwick_tree, slots - 1);
-        print_var(temp_sum);
+        // print_var(temp_sum);
 
         
         assert(abs(total_sum - temp_sum) < 0.1);
@@ -215,8 +230,8 @@ private:
         int counter = 0;
         while(counts[bet->slot] >= depth){
             counter++;
-            if (counter > slots){
-                mod_reset();
+            if (counter > 5*slots){
+                // mod_reset();
                 choice = get_random_range(total_sum);
                 bet->slot = lower_bound_on_fenwick_tree(fenwick_tree, 0, slots - 1, choice);
                 break;
@@ -229,6 +244,20 @@ private:
             bet->slot = lower_bound_on_fenwick_tree(fenwick_tree, 0, slots - 1, choice);
         }
         if (bet->slot == slots) bet->slot--;
+        // print_var(bet->slot);
+        // print_var(probabilities[bet->slot]);
+        // print_var(short_history_probabilities[bet->slot]);
+        // cout << endl;
+        if (probabilities[bet->slot] >= PROB_THRESH 
+        // || short_history_probabilities[bet->slot] >= PROB_THRESH
+        ) bet->bet = 3;
+        if (short_history_probabilities[bet->slot] < 0.52) upset_counts[bet->slot]++;
+        if (upset_counts[bet->slot] > 100){
+            mod_reset();
+            choice = get_random_range(total_sum);
+            bet->slot = lower_bound_on_fenwick_tree(fenwick_tree, 0, slots - 1, choice);
+            bet->bet = 1;
+        }
         return bet;
     }
 
@@ -253,13 +282,16 @@ private:
         // short_history_probabilities update:
         short_history_probabilities[last_slot] = get_win_probability(short_history_data, last_slot);
 
+        // probabilities update:
+        probabilities[last_slot] = get_win_probability(wins_losses, last_slot);
+
         // confidence_update:
         confidence[last_slot] = ((double)counts[last_slot]) / ((double)depth);
 
         // fenwick_tree update:
         double last_sum = get_sum(fenwick_tree, last_slot);
-        assert(depth >= counts[last_slot]);
-        double diff = (((double)(depth - counts[last_slot])) * confidence[last_slot]) - last_sum;
+        // assert(depth >= counts[last_slot]);
+        double diff = (max(0.0, ((double)(depth - counts[last_slot]))) * confidence[last_slot]) - last_sum;
         update_tree(fenwick_tree, last_slot, diff);
 
         // total_sum update:
@@ -340,5 +372,5 @@ vector<pair<int, int> > gambler::short_history_data;
 int gambler::history_length, gambler::depth;
 double gambler::total_sum;
 vector<double> gambler::fenwick_tree, gambler::short_history_probabilities, gambler::confidence;
-vector<int> gambler::counts;
+vector<int> gambler::counts, gambler::upset_counts;
 #endif
