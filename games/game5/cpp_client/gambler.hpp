@@ -251,7 +251,7 @@ private:
         if (probabilities[bet->slot] >= PROB_THRESH 
         // || short_history_probabilities[bet->slot] >= PROB_THRESH
         ) bet->bet = 3;
-        if (short_history_probabilities[bet->slot] < 0.52) upset_counts[bet->slot]++;
+        if (short_history_probabilities[bet->slot] < 0.49) upset_counts[bet->slot]++;
         if (upset_counts[bet->slot] > 100){
             mod_reset();
             choice = get_random_range(total_sum);
