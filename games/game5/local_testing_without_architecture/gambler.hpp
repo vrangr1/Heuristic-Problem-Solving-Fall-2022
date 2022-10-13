@@ -154,13 +154,8 @@ private:
         double temp_sum = get_sum(fenwick_tree, slots - 1);
         print_var(temp_sum);
 
-        for (int i = 0; i < slots; ++i){
-            temp_sum = get_sum(fenwick_tree, i);
-            print_var(temp_sum);
-            // print_var(get_sum(fenwick_tree, i));
-        }
-        // assert(total_sum == get_sum(fenwick_tree, slots - 1));
-        assert(total_sum == temp_sum);
+        
+        assert(abs(total_sum - temp_sum) < 0.1);
     }
 
     static bet_data* mod_strategy(){
@@ -183,8 +178,8 @@ private:
         // short_history_data update
         if (last_bet->won) short_history_data[last_slot].first++;
         else short_history_data[last_slot].second++;
-        if (last_slot - history_length >= 0){
-            bet_data *temp = pulls[last_slot - history_length];
+        if (pull_count - history_length >= 0){
+            bet_data *temp = pulls[pull_count - history_length];
             if (temp->won) short_history_data[temp->slot].first--;
             else short_history_data[temp->slot].second--;
         }

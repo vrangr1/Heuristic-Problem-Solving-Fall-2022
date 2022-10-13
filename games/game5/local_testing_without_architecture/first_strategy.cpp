@@ -42,7 +42,7 @@ class Gambler{
 	void gambler_player(void (BanditGame::*function)(int, int), BanditGame &game){
 		pair<int,int> current_bet = gambler::get_return_data(game.get_tokens(), s, 500*s);
 		print(current_bet);
-		(game.*function)(current_bet.second, current_bet.first + 1);
+		(game.*function)(current_bet.second, current_bet.first);
 	}
 };
 
