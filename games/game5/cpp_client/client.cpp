@@ -15,6 +15,7 @@
 #include <string>
 #include <iostream>
 #include "gambler.hpp"
+#include "casino.hpp"
 using namespace std;
 
 class Client
@@ -44,7 +45,7 @@ Returns:
 	-	initial winning slot number in range [1, slot_count] */
 int Client::casino_action_init(int switch_budget, int slot_count, int player_wealth)
 {
-	return 1;
+	return casino::init_func();
 }
 
 /* Called after the player has pulled the lever of a slot machine
@@ -59,7 +60,7 @@ Returns:
 	-	`0` if not switching OR winning slot number in range [1, slot_count] */
 int Client::casino_action(int switch_budget, int slot_count, int player_wealth, int player_switched)
 {
-	return 0;
+	return casino::my_func();
 }
 
 /* Called when the player can pull the lever of a slot machine

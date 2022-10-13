@@ -55,6 +55,11 @@ private:
         return (total + wins - losses)/ (2 * total); // in [0, 1] range
     }
 
+    static double get_upper_confidence_bound(int slot_index){
+        double total = wins_losses[slot_index].first + wins_losses[slot_index].second;
+        return sqrt((2*log(pull_count)) / total);
+    }
+
     static void egreedy_setup(){
         probabilities.clear();
         probabilities.resize(slots, 0.0);
@@ -88,14 +93,22 @@ private:
         probabilities[last_slot] = get_expected_reward(last_slot);
     }
 
-    static void ucb_strategy_setup(){}
+    static void ucb_strategy_setup(){
+        probabilities.clear();
+        probabilities.resize(slots, 0.0);
+    }
 
     static bet_data* ucb_strategy(){
-        return nullptr;
+        bet_data *current_bet = new bet_data();
+        current_bet->bet = 1;
+        current_bet->slot = get_index_highest_value(probabilities);
+        return current_bet;
     }
 
     static void ucb_logging(){
-        return;
+        if (pull_count == 0) return;
+        int last_slot = pulls[pull_count - 1]->slot;
+        probabilities[last_slot] = get_expected_reward(last_slot) + get_upper_confidence_bound(last_slot);
     }
 
     static void common_beginning_setup(const int &player_wealth, const int &slot_count, const int &pull_budget){

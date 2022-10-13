@@ -24,7 +24,7 @@ After cloning the repo, to properly update all the submodules cloned inside this
     - Game Architecture: [kanika127/HPS-ambulance-pickup-architecture](https://github.com/kanika127/HPS-ambulance-pickup-architecture)
 * Game 5: The Bandit Game
     - Game Description: [link](https://cs.nyu.edu/courses/fall22/CSCI-GA.2965-001/bandit.html)
-    - Game Architecture: TBR
+    - Game Architecture: [Jkker/bandit-game-architecture](https://github.com/Jkker/bandit-game-architecture)
 * Game 6: Evasion
     - Game Description: [link](https://cs.nyu.edu/courses/fall22/CSCI-GA.2965-001/evasion.html)
     - Game Architecture: TBR

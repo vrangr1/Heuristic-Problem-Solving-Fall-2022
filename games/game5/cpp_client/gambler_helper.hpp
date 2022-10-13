@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <random>
 #include <set>
+#include <cmath>
 #include <assert.h>
 #define NOT_DEFINED -97293
 
