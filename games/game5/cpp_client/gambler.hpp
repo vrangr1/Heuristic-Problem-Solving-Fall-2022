@@ -1,6 +1,7 @@
 #ifndef _GAMBLER_HPP_
 #define _GAMBLER_HPP_
 #include "gambler_helper.hpp"
+#include "fenwick_tree.hpp"
 
 class gambler{
 private:
@@ -8,11 +9,19 @@ private:
     static vector<pair<int,int> > wins_losses; // wins_losses: ith slot -> (wins, losses),
     static vector<bet_data*> pulls; // pulls: ith pull -> bet details
 
-    // Epsilon Greedy Strategy:
+    // Epsilon Greedy and Upper Confidence Bound Strategies:
     static vector<double> probabilities;
     static double epsilon;
 
-    static void call_strategy_function(void (*egreedy)(), void (*ucb)()){
+    // Mod Strategy:
+    static vector<pair<int, int> > short_history_data; // ith slot -> (wins, losses)
+    static int depth, history_length;
+    static double total_sum;
+    static vector<double> fenwick_tree;
+    static vector<double> short_history_probabilities, confidence;
+    static vector<int> counts;
+
+    static void call_strategy_function(void (*egreedy)(), void (*ucb)(), void (*mod)()){
         switch(STRATEGY){
             case EGREEDY:
                 egreedy();
@@ -20,16 +29,22 @@ private:
             case UCB:
                 ucb();
                 break;
+            case MOD:
+                mod();
+                break;
         }
     }
 
-    static bet_data* call_strategy_function(bet_data* (*egreedy)(), bet_data* (*ucb)()){
+    static bet_data* call_strategy_function(bet_data* (*egreedy)(), bet_data* (*ucb)(), bet_data* (*mod)()){
         switch(STRATEGY){
             case EGREEDY:
                 return egreedy();
                 break;
             case UCB:
                 return ucb();
+                break;
+            case MOD:
+                return mod();
                 break;
         }
     }
@@ -118,12 +133,86 @@ private:
         probabilities[last_slot] = get_expected_reward(last_slot) + get_upper_confidence_bound(last_slot);
     }
 
+    static void mod_strategy_setup(){
+        // TODO: Tune these parameters
+        history_length = 20;
+        depth = max(15, total_pull_budget / (slots * k_max));
+        print_var(depth);
+        short_history_data.clear();
+        short_history_data.resize(slots, make_pair(0, 0));
+        
+        fenwick_tree.clear();
+        fenwick_tree.resize(slots + 1, 0.0);
+        confidence.clear();
+        confidence.resize(slots, 0.01L);
+        counts.clear();
+        counts.resize(slots, 0);
+        vector<double> tree_construction(slots, (((double)depth)*0.01L));
+        construct_fenwick_tree(tree_construction, fenwick_tree);
+        total_sum = ((double)(depth * slots)) * 0.01L;
+        print_var(total_sum);
+        double temp_sum = get_sum(fenwick_tree, slots - 1);
+        print_var(temp_sum);
+
+        for (int i = 0; i < slots; ++i){
+            temp_sum = get_sum(fenwick_tree, i);
+            print_var(temp_sum);
+            // print_var(get_sum(fenwick_tree, i));
+        }
+        // assert(total_sum == get_sum(fenwick_tree, slots - 1));
+        assert(total_sum == temp_sum);
+    }
+
+    static bet_data* mod_strategy(){
+        bet_data *bet = new bet_data();
+        bet->bet =  1;
+        double choice = get_random_range(total_sum);
+        bet->slot = lower_bound_on_fenwick_tree(fenwick_tree, 0, slots - 1, choice);
+        return bet;
+    }
+
+    // counts, short_history_data, total_sum, fenwick_tree, short_history_probabilities, confidence
+    static void mod_logging(){
+        if (pull_count == 0) return;
+        bet_data *last_bet = pulls[pull_count - 1];
+        int last_slot = last_bet->slot;
+        
+        //counts update
+        counts[last_slot]++;
+
+        // short_history_data update
+        if (last_bet->won) short_history_data[last_slot].first++;
+        else short_history_data[last_slot].second++;
+        if (last_slot - history_length >= 0){
+            bet_data *temp = pulls[last_slot - history_length];
+            if (temp->won) short_history_data[temp->slot].first--;
+            else short_history_data[temp->slot].second--;
+        }
+
+        // short_history_probabilities update:
+        short_history_probabilities[last_slot] = get_win_probability(short_history_data, last_slot);
+
+        // confidence_update:
+        confidence[last_slot] = ((double)counts[last_slot]) / ((double)depth);
+
+        // fenwick_tree update:
+        double last_sum = get_sum(fenwick_tree, last_slot);
+        double diff = (((double)(depth - counts[last_slot])) * confidence[last_slot]) - last_sum;
+        update_tree(fenwick_tree, last_slot, diff);
+
+        // total_sum update:
+        total_sum = get_sum(fenwick_tree, slots - 1);
+
+        probabilities[last_slot] = get_expected_reward(last_slot) + get_upper_confidence_bound(last_slot);
+    }
+
     static void common_beginning_setup(const int &player_wealth, const int &slot_count, const int &pull_budget){
         previous_wealth = NOT_DEFINED;
         total_wealth = player_wealth;
         current_wealth = player_wealth;
         
         slots = slot_count;
+        k_max = slots / 7;
         #if debug_mode
         cout << "in common setup func\n";
         print_var(slots);
@@ -149,7 +238,7 @@ private:
         
         common_beginning_setup(player_wealth, slot_count, pull_budget);
 
-        call_strategy_function(&egreedy_setup, &ucb_strategy_setup);
+        call_strategy_function(&egreedy_setup, &ucb_strategy_setup, &mod_strategy_setup);
 
     }
 
@@ -157,10 +246,10 @@ private:
         bet_data *current_bet;
         
         // Log data from previous pull
-        call_strategy_function(&egreedy_logging, &ucb_logging);
+        call_strategy_function(&egreedy_logging, &ucb_logging, &mod_logging);
         
         // Decide current bet
-        current_bet = call_strategy_function(&egreedy_strategy, &ucb_strategy);
+        current_bet = call_strategy_function(&egreedy_strategy, &ucb_strategy, &mod_strategy);
         // print_itr(current_bet);
         
         // Log the current bet
@@ -184,4 +273,10 @@ vector<bet_data*> gambler::pulls;
 
 vector<double> gambler::probabilities;
 double gambler::epsilon;
+
+vector<pair<int, int> > gambler::short_history_data;
+int gambler::history_length, gambler::depth;
+double gambler::total_sum;
+vector<double> gambler::fenwick_tree, gambler::short_history_probabilities, gambler::confidence;
+vector<int> gambler::counts;
 #endif

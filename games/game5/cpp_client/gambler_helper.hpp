@@ -27,7 +27,8 @@ template <typename t1, typename t2> void print(const pair<t1, t2> &p);
 
 enum STRATEGIES{
     EGREEDY,
-    UCB
+    UCB,
+    MOD
 };
 
 
@@ -76,6 +77,11 @@ inline double get_random(){
     return rng / ((double)1e5);
 }
 
+inline double get_random_range(double high_val){ // should return a value in [0, high_val]
+    double rng = get_random(); // should between [0, 1]
+    return rng * high_val;
+}
+
 template <typename type> int get_index_highest_value(const vector<type> &arr){
     #if debug_mode
     cout << "get highest index\n";
@@ -96,6 +102,19 @@ template <typename type> int get_index_highest_value(const vector<type> &arr){
     #endif
     return best_index;
 }
+
+double get_win_probability(const vector<pair<int, int> > &wins_losses, const int slot_index){
+    double wins = wins_losses[slot_index].first, losses = wins_losses[slot_index].second;
+    double total = wins + losses;
+    return wins/total;
+}
+
+
+
+
+
+
+
 
 
 

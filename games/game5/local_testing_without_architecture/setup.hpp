@@ -27,21 +27,13 @@ using namespace std;
 #define TEST int T;cin>>T;while(T--)solve();
 #define TEST1 solve();
 #define pass (void)0
-#define print_var(x) cout << #x << ": " << x << "\n";
+// #define print_var(x) cout << #x << ": " << x << "\n";
 #define print_iter(x) cout << "*" << #x << ": " << *x << endl;
 #define space " "
-#define NOT_DEFINED -12923
+#define NOT_DEFINED1 -12923
 
 #define debug_mode false
 
-typedef long long int ll;
-typedef unsigned long long int ull;
-template <typename type> void print(const vector<vector<type> > &arr);
-template <typename type> void print(const vector<type> &arr);
-template <typename type> void off_print(const vector<type> &arr);
-template <typename t1, typename t2> void print(const vector<pair<t1,t2> > &arr);
-template <typename t1, typename t2> void print(const vector<vector<pair<t1,t2> > > &arr);
-template <typename t1, typename t2> void print(const pair<t1, t2> &p);
 
 #define NORMAL_SLOT 0.47
 #define WINNING_SLOT 0.6
@@ -55,9 +47,9 @@ public:
     BanditGame(int s, int k) : s(s), k(k){
         assert(s <= 100);
         assert(k <= s/7);
-        this->winning_slot = NOT_DEFINED;
-        this->gambler_slot = NOT_DEFINED;
-        this->previous_slot = NOT_DEFINED;
+        this->winning_slot = NOT_DEFINED1;
+        this->gambler_slot = NOT_DEFINED1;
+        this->previous_slot = NOT_DEFINED1;
         this->tokens = 500 * this->s;
         this->pulls = 0;
     }
@@ -67,9 +59,9 @@ public:
     }
 
     void casino_move(int choice, bool debug){
-        if (debug) print_var(choice);
+        // if (debug) print_var(choice);
         static int changes = 0;
-        if (this->winning_slot == NOT_DEFINED) this->winning_slot = choice; // game start
+        if (this->winning_slot == NOT_DEFINED1) this->winning_slot = choice; // game start
         else if (this->winning_slot != choice && changes++ < k) this->winning_slot = choice;
         else if (this->winning_slot != choice) assert(false); // Illegal move by casino
         else pass;// this->winning_slot == choice
@@ -77,14 +69,14 @@ public:
 
     void casino_move(int choice){
         static int changes = 0;
-        if (this->winning_slot == NOT_DEFINED) this->winning_slot = choice; // game start
+        if (this->winning_slot == NOT_DEFINED1) this->winning_slot = choice; // game start
         else if (this->winning_slot != choice && changes++ < k) this->winning_slot = choice;
         else if (this->winning_slot != choice) assert(false); // Illegal move by casino
         else pass;// this->winning_slot == choice
     }
 
     bool changed_gambling_slot(){
-        if (this->previous_slot != NOT_DEFINED)
+        if (this->previous_slot != NOT_DEFINED1)
             return this->gambler_slot != this->previous_slot;
         return false;
     }
@@ -93,19 +85,19 @@ public:
         if (bet == 0) game_over();
         assert(bet > 0 && bet <= 3);
         assert(slot >= 1 && slot <= this->s);
-        assert(this->winning_slot != NOT_DEFINED);
+        assert(this->winning_slot != NOT_DEFINED1);
         this->pulls++;
         this->previous_slot = this->gambler_slot;
         this->gambler_slot = slot;
-        if (debug) print_var(slot);
+        // if (debug) print_var(slot);
         double predict = rand();
         predict /= RAND_MAX;
         // 0 <= predict <= 1
         bet *= (predict <= (slot == this->winning_slot? WINNING_SLOT : NORMAL_SLOT)? 1 : -1);
-        if (debug){
-            print_var(predict);
-            print_var(bet);
-        }
+        // if (debug){
+        //     print_var(predict);
+        //     print_var(bet);
+        // }
         this->tokens += bet;
         if (debug){
             cout << "After Gambler's move, the tokens remaining are: " << this->tokens << endl;
@@ -118,7 +110,7 @@ public:
         if (bet == 0) game_over();
         assert(bet > 0 && bet <= 3);
         assert(slot >= 1 && slot <= this->s);
-        assert(this->winning_slot != NOT_DEFINED);
+        assert(this->winning_slot != NOT_DEFINED1);
         this->pulls++;
         this->previous_slot = this->gambler_slot;
         this->gambler_slot = slot;
@@ -141,76 +133,5 @@ public:
         exit(0);
     }
 };
-
-
-
-
-
-
-
-
-
-
-template <typename type> void print(const vector<vector<type> > &arr){
-	cout << "\n[";
-	for (int i = 0; i < arr.size(); ++i){
-		cout << "[";
-		for (int j = 0; j < arr[i].size() - 1; ++j)
-			cout << arr[i][j] << ", ";
-		cout << arr[i][arr[i].size() - 1] << "]";
-		if (i != arr.size() - 1)
-			cout << "," << endl;
-	}
-	cout << "], 2D Vector\n";
-}
-
-
-template <typename type> void print(const vector<type> &arr){
-	cout << "\n[";
-	for (int i = 0; i < arr.size(); ++i){
-		cout << arr[i];
-		if (i != arr.size() - 1)
-			cout << ", ";
-	}
-	cout << "], 1D Vector\n";
-}
-
-template <typename type> void off_print(const vector<type> &arr){
-	for (int i = 0; i < arr.size(); ++i)
-		cout << arr[i] << " ";
-	cout << endl;
-}
-
-
-template <typename t1, typename t2> void print(const vector<pair<t1,t2> > &arr){
-	int n = arr.size();
-	cout << "\n[";
-	for (int i = 0; i < n - 1; ++i)
-		cout << "{" << arr[i].first << "," << arr[i].second << "}, ";
-	cout << "{" << arr[n - 1].first << "," << arr[n - 1].second << "}], 1D Vector of Pairs\n";
-}
-
-
-template <typename t1, typename t2> void print(const vector<vector<pair<t1,t2> > > &arr){
-	cout << "\n[";
-	for (int i = 0; i < arr.size(); ++i){
-		cout << "[";
-		for (int j = 0; j < arr[i].size(); ++j){
-			cout << "{" << arr[i][j].first << "," << arr[i][j].second << "}";
-			if (j != arr[i].size() - 1)
-				cout << ", ";
-		}
-		cout << "]";
-		if (i != arr.size() - 1)
-			cout << "," << endl;
-	}
-	cout << "], 2D Vector of Pairs\n";
-}
-
-
-template <typename t1, typename t2> void print(const pair<t1, t2> &p){
-	cout << "\n{" << p.first << "," << p.second << "}, Pair\n";
-}
-
 
 #endif
