@@ -173,11 +173,62 @@ private:
         assert(abs(total_sum - temp_sum) < 0.1);
     }
 
+    // counts, short_history_data, total_sum, fenwick_tree, short_history_probabilities, confidence
+    static void mod_reset(){
+        // counts setup
+        counts.clear();
+        counts.resize(slots, 0);
+
+        // short_history_data setup
+        short_history_data.clear();
+        short_history_data.resize(slots, make_pair(0, 0));
+
+        short_history_probabilities.clear();
+        short_history_probabilities.resize(slots, 0.0);
+        
+        // fenwick tree setup
+        fenwick_tree.clear();
+        fenwick_tree.resize(slots + 1, 0.0);
+        
+        // confidence setup
+        confidence.clear();
+        confidence.resize(slots, 0.01L);
+        
+        vector<double> tree_construction(slots, (((double)depth)*0.01L));
+        construct_fenwick_tree(tree_construction, fenwick_tree);
+        
+        // total_sum setup
+        total_sum = ((double)(depth * slots)) * 0.01L;
+        print_var(total_sum);
+        double temp_sum = get_sum(fenwick_tree, slots - 1);
+        print_var(temp_sum);
+
+        
+        assert(abs(total_sum - temp_sum) < 0.1);
+    }
+
     static bet_data* mod_strategy(){
         bet_data *bet = new bet_data();
         bet->bet =  1;
         double choice = get_random_range(total_sum);
         bet->slot = lower_bound_on_fenwick_tree(fenwick_tree, 0, slots - 1, choice);
+        int counter = 0;
+        while(counts[bet->slot] >= depth){
+            counter++;
+            if (counter > slots){
+                mod_reset();
+                choice = get_random_range(total_sum);
+                bet->slot = lower_bound_on_fenwick_tree(fenwick_tree, 0, slots - 1, choice);
+                break;
+            }
+            double diff = -get_sum(fenwick_tree, bet->slot);
+            update_tree(fenwick_tree, bet->slot, diff);
+            total_sum = get_sum(fenwick_tree, slots - 1);
+
+            choice = get_random_range(total_sum);
+            bet->slot = lower_bound_on_fenwick_tree(fenwick_tree, 0, slots - 1, choice);
+        }
+        if (bet->slot == slots) bet->slot--;
         return bet;
     }
 
@@ -207,13 +258,14 @@ private:
 
         // fenwick_tree update:
         double last_sum = get_sum(fenwick_tree, last_slot);
+        assert(depth >= counts[last_slot]);
         double diff = (((double)(depth - counts[last_slot])) * confidence[last_slot]) - last_sum;
         update_tree(fenwick_tree, last_slot, diff);
 
         // total_sum update:
         total_sum = get_sum(fenwick_tree, slots - 1);
 
-        probabilities[last_slot] = get_expected_reward(last_slot) + get_upper_confidence_bound(last_slot);
+        // probabilities[last_slot] = get_expected_reward(last_slot) + get_upper_confidence_bound(last_slot);
     }
 
     static void common_beginning_setup(const int &player_wealth, const int &slot_count, const int &pull_budget){

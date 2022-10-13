@@ -32,7 +32,7 @@ enum STRATEGIES{
 };
 
 
-const STRATEGIES STRATEGY = UCB;
+const STRATEGIES STRATEGY = MOD;
 // const double epsilon = 0.4;
 
 

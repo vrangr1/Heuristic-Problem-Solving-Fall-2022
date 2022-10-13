@@ -109,6 +109,7 @@ public:
     void gambler_move(int bet, int slot){
         if (bet == 0) game_over();
         assert(bet > 0 && bet <= 3);
+        cout << "slot: " << slot << endl;
         assert(slot >= 1 && slot <= this->s);
         assert(this->winning_slot != NOT_DEFINED1);
         this->pulls++;
