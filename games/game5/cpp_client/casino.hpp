@@ -5,8 +5,9 @@
 class casino{
 private:
     static int turn_number; // This is also number of pulls
-    static int turns_since_casino_switch;
+    static int casino_switch_turn;
     static int starting_wealth;
+    static int skip_switch;
     static int prev_turn_wealth;
     static int expected_wealth;
     static int number_of_wins;
@@ -14,6 +15,7 @@ private:
     static int winning_slot;
     static int number_of_pulls;
     static int total_casino_switch;
+    static set<int> seq;
     // static int slots;
 public:
 
@@ -25,6 +27,8 @@ public:
         expected_wealth = player_wealth;
         prev_turn_wealth = player_wealth;
         number_of_pulls = 500 * slot_count;
+        casino_switch_turn = 0;
+        skip_switch = 0;
         // TODO: Greater than slot_count/10
         winning_slot = min((double)slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count)));
         return winning_slot;
@@ -50,20 +54,48 @@ public:
 
     static int simple_my_func(int switch_budget, int slot_count, int player_wealth, int player_switched){
         turn_number++;
-        if (turn_number%100 == 0){
+        if (switch_budget <= 0){
+            return 0;
+        }
+
+        if (seq.size() == 0){
+            int diff = floor((number_of_pulls-skip_switch)/(switch_budget+1));
+            int new_val = skip_switch;
+            while (new_val < number_of_pulls){
+                new_val += diff;
+                seq.insert(new_val);
+            }
+        }
+        auto pos = seq.find(turn_number);    
+        if (turn_number%1000 == 0){
+            // for (auto it = seq.begin(); it !=
+            //                  seq.end(); ++it)
+            // cout << ' ' << *it;
             cout<< "command "<< turn_number << "\n";
         }
-        int diff = floor(((double)number_of_pulls)/((double)total_casino_switch + 1));
-        if (turn_number % diff == 0){
-            cout << "command Turn_number "<< turn_number << " Diff is " << diff << "\n";
-            return min((double)slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count))); 
+        if (turn_number != 500*slot_count && pos != seq.end()){
+            if (player_wealth > starting_wealth || (number_of_pulls-turn_number < 500)){
+                seq.erase(turn_number);
+                // cout << "command Turn_number "<< turn_number << "\n";
+                return min((double)slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count))); 
+            }
+            else{
+                skip_switch = turn_number;
+                seq.clear();
+            }
         }
         return 0;
+        // int diff = floor(((double)number_of_pulls)/((double)total_casino_switch + 1));
+        // if (turn_number % diff == 0){
+        //     cout << "command Turn_number "<< turn_number << " Diff is " << diff << "\n";
+        //     return min((double)slot_count, ceil((((double)rand()+1)/ ((double)RAND_MAX)) * ((double)slot_count))); 
+        // }
+        // return 0;
     }
 };
 
 int casino::turn_number; 
-int casino::turns_since_casino_switch;
+int casino::casino_switch_turn;
 int casino::starting_wealth;
 int casino::prev_turn_wealth;
 int casino::expected_wealth;
@@ -72,5 +104,7 @@ int casino::number_of_loss;
 int casino::winning_slot;
 int casino::number_of_pulls;
 int casino::total_casino_switch;
+int casino::skip_switch;
+set<int> casino::seq;
 
 #endif
