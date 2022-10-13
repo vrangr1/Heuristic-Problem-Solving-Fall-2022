@@ -81,7 +81,7 @@ private:
         else
             current_bet->slot = get_index_highest_value(probabilities);
         #if debug_mode
-        if (pull_count > 1000)
+        if (pull_count > 30)
             current_bet->slot = 0, current_bet->bet = 0;
         #endif
         return current_bet;
@@ -95,13 +95,20 @@ private:
 
     static void ucb_strategy_setup(){
         probabilities.clear();
-        probabilities.resize(slots, 0.0);
+        probabilities.resize(slots, 1.0);
     }
 
     static bet_data* ucb_strategy(){
         bet_data *current_bet = new bet_data();
+        #if debug_mode
+        print(probabilities);
+        #endif
         current_bet->bet = 1;
         current_bet->slot = get_index_highest_value(probabilities);
+        #if debug_mode
+        if (pull_count > 30)
+            current_bet->slot = 0, current_bet->bet = 0;
+        #endif
         return current_bet;
     }
 
@@ -145,8 +152,6 @@ private:
         call_strategy_function(&egreedy_setup, &ucb_strategy_setup);
 
     }
-
-
 
     static pair<int,int> strategy_move(){
         bet_data *current_bet;

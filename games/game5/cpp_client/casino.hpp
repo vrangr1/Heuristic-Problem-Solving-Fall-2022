@@ -8,9 +8,9 @@ private:
 public:
 
     static int init_func(){
-
+        return 1;
     }
-    
+
     static int my_func(){
         return 0;
     }

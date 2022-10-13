@@ -31,7 +31,7 @@ enum STRATEGIES{
 };
 
 
-const STRATEGIES STRATEGY = EGREEDY;
+const STRATEGIES STRATEGY = UCB;
 // const double epsilon = 0.4;
 
 
@@ -45,6 +45,7 @@ public:
         this->slot = -1;
         this->won = false;
     }
+
     bet_data(int slot, int bet){
         this->bet = bet;
         this->slot = slot;
