@@ -1,12 +1,13 @@
 #if 0
     me=`basename $0 .cpp`
-    g++ $me.cpp -o $me
+    g++ $me.cpp -o $me -g -O3
     ./$me
     rm $me
     exit
 #endif
 
 #include "setup.hpp"
+#include "gambler.hpp"
 
 const int s = 100, k = 10;
 
@@ -39,10 +40,8 @@ class Gambler{
 	Gambler(int given_slots) : slots(given_slots), max_k(given_slots / 7), pulls_record(given_slots + 1, 0){}
 
 	void gambler_player(void (BanditGame::*function)(int, int), BanditGame &game){
-		int bet, slot;
-		bet = 1;
-		slot = 8;
-		(game.*function)(bet, slot);
+		pair<int,int> current_bet = gambler::get_return_data(game.get_tokens(), 0, 0);
+		(game.*function)(current_bet.second, current_bet.first);
 	}
 };
 

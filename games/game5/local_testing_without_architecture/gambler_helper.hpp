@@ -6,10 +6,10 @@
 #include <random>
 #include <set>
 #include <assert.h>
-#define NOT_DEFINED -97293
+#define NOT_DEFINED1 -97293
 
 #define endl "\n"
-#define print_var(x) cout << #x << ": " << x << endl;
+// #define print_var(x) cout << #x << ": " << x << endl;
 
 using namespace std;
 

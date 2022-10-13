@@ -63,7 +63,7 @@ private:
     }
 
     static void common_beginning_setup(const int &player_wealth, const int &slot_count, const int &pull_budget){
-        previous_wealth = NOT_DEFINED;
+        previous_wealth = NOT_DEFINED1;
         total_wealth = player_wealth;
         current_wealth = player_wealth;
         
