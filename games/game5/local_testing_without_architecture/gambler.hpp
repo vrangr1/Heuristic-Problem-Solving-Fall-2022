@@ -133,22 +133,37 @@ private:
         probabilities[last_slot] = get_expected_reward(last_slot) + get_upper_confidence_bound(last_slot);
     }
 
+    // counts, short_history_data, total_sum, fenwick_tree, short_history_probabilities, confidence
     static void mod_strategy_setup(){
         // TODO: Tune these parameters
+        // depth, history length setup
         history_length = 20;
         depth = max(15, total_pull_budget / (slots * k_max));
         print_var(depth);
-        short_history_data.clear();
-        short_history_data.resize(slots, make_pair(0, 0));
-        
-        fenwick_tree.clear();
-        fenwick_tree.resize(slots + 1, 0.0);
-        confidence.clear();
-        confidence.resize(slots, 0.01L);
+
+        // counts setup
         counts.clear();
         counts.resize(slots, 0);
+
+        // short_history_data setup
+        short_history_data.clear();
+        short_history_data.resize(slots, make_pair(0, 0));
+
+        short_history_probabilities.clear();
+        short_history_probabilities.resize(slots, 0.0);
+        
+        // fenwick tree setup
+        fenwick_tree.clear();
+        fenwick_tree.resize(slots + 1, 0.0);
+        
+        // confidence setup
+        confidence.clear();
+        confidence.resize(slots, 0.01L);
+        
         vector<double> tree_construction(slots, (((double)depth)*0.01L));
         construct_fenwick_tree(tree_construction, fenwick_tree);
+        
+        // total_sum setup
         total_sum = ((double)(depth * slots)) * 0.01L;
         print_var(total_sum);
         double temp_sum = get_sum(fenwick_tree, slots - 1);
