@@ -1,8 +1,10 @@
+from tkinter import HORIZONTAL
 from numpy import Inf
 from debug_print import print_func
 from data_structures import *
 from io_parser import io_parser
 import random
+import copy
 
 class hunter:
     INT_MAX = 2147483647
@@ -18,11 +20,13 @@ class hunter:
         self.board_dims : coord = coord(parsed_data[DATA.BOARD_SIZE_X], parsed_data[DATA.BOARD_SIZE_Y])
     
     def update(self, parsed_data : dict) -> None:
+        self.prev_walls : list() = copy.deepcopy(parsed_data[DATA.WALL_DATA])
+        # print_func("len1: " + str(len(self.prev_walls)))
         self.walls : list() = parsed_data[DATA.WALL_DATA]
         self.location : coord = parsed_data[DATA.HUNTER_DATA]
+        # self.location.print_coord()
         self.prey_location : coord = parsed_data[DATA.PREY_LOC]
         self.wall_timer : int = parsed_data[DATA.WALL_TIMER]
-        pass
 
     def random_move(self, parsed_data : dict) -> dict:
         wall = wall_type(random.randint(0,2))
@@ -191,7 +195,7 @@ class hunter:
         
         new_minimum_area = min(vertical_area, horizontal_area)
 
-        if new_minimum_area > current_area:
+        if new_minimum_area >= current_area:
             move[DATA.ADD_WALL] = wall_type.NOWALL
             return move
         elif new_minimum_area == horizontal_area:
@@ -214,6 +218,26 @@ class hunter:
 
         return walls_remove
     
+    def too_close_to_edge(self) -> bool:
+        # print_func("here: ")
+        # print_func("len: " + str(len(self.prev_walls)))
+        # self.location.print_coord()
+        # self.board_dims.print_coord()
+        dist = min(self.location.x, self.location.y)
+        dist = min(dist, abs(self.location.x - self.board_dims.x))
+        dist = min(dist, abs(self.location.y - self.board_dims.y))
+        cur_wall: wall
+        for cur_wall in self.prev_walls:
+            # print_func(cur_wall.coord)
+            if cur_wall.type == wall_type.HORIZONTAL:
+                dist = min(abs(self.location.y - cur_wall.coord), dist)
+            else:
+                dist = min(abs(self.location.x - cur_wall.coord), dist)
+        # print_func(dist)
+        if dist < 8:
+            return True
+        return False
+    
     def move_ahead(self, parsed_data : dict) -> dict:
         flag  = False
         move = dict()
@@ -230,9 +254,13 @@ class hunter:
     
     def move_behind(self, parsed_data) -> dict:
         move = self.is_this_good_time_for_wall()
-
+        # if (move[DATA.ADD_WALL] != wall_type.NOWALL):
+            # print_func("yes! " + move[DATA.ADD_WALL].name)
+            # print_func("location: " + str(self.location.x) + ", " + str(self.location.y))
+            # print_func("\n")
         if len(self.walls) >= self.max_walls:
             move[DATA.DELETE_WALL] = self.remove_walls()
+            print_func(move[DATA.DELETE_WALL])
 
         return move
 
@@ -248,6 +276,8 @@ class hunter:
 
         if DATA.DELETE_WALL not in move.keys():
             move[DATA.DELETE_WALL] = list()
+        if self.too_close_to_edge():
+            move[DATA.ADD_WALL] = wall_type.NOWALL
         return move
 
     def get_move(self, parsed_data : dict) -> str:

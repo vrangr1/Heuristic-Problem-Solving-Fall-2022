@@ -1,4 +1,5 @@
 from enum import Enum
+from debug_print import print_func
 
 class DATA(Enum):
     __order__ = "TIME_LEFT GAME_NUM TICK_NUM MAX_WALLS WALL_DELAY BOARD_SIZE_X BOARD_SIZE_Y WALL_TIMER WALL_COUNT WALL_DATA HUNTER_DATA PREY_LOC ADD_WALL DELETE_WALL PREY_MOVEMENT"
@@ -41,6 +42,9 @@ class coord:
 
     def equals(self, coord):
         return self.x == coord.x and self.y == coord.y
+    def print_coord(self):
+        print_func("x: " + str(self.x), end = ", ")
+        print_func("y: " + str(self.y))
 
 
 class wall:
