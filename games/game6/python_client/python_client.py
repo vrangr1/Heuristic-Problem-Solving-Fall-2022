@@ -1,5 +1,6 @@
 import sys
-import game_player
+# import game_player
+from game_player import game_player
 
 if __name__ == '__main__':
     port = int(sys.argv[1])
