@@ -22,7 +22,7 @@ class io_parser:
         for i in range(0, data[DATA.WALL_COUNT]):
             data[DATA.WALL_DATA].append(
                 wall(
-                    input_list[0 + i * 4], input_list[1 + i * 4], int(input_list[2 + i * 4]), int(input_list[3 + i * 4]), i
+                    wall_type(input_list[0 + i * 4]), input_list[1 + i * 4], int(input_list[2 + i * 4]), int(input_list[3 + i * 4])
                     ))
         return data
     

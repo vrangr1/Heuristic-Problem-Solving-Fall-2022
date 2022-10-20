@@ -44,13 +44,12 @@ class coord:
 
 
 class wall:
-    def __init__(self, wallType : int, coord : int, start : int, end : int, index : int):
-        # 0 for horizontal, 1 for vertical
-        self.type = wall_type(wallType)
+    def __init__(self, given_type: wall_type, coord : int, start : int, end : int):
+        self.type = given_type
+        assert self.type == wall_type.HORIZONTAL or self.type == wall_type.VERTICAL
         self.coord = coord
         self.start = start
         self.end = end
-        self.index = index
 
     def occupies(self, coord : coord):
         if self.type == wall_type.HORIZONTAL:
