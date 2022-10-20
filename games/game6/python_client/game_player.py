@@ -21,7 +21,8 @@ class game_player:
         stream = ""
         while True:
             while True:
-                stream = stream + self.sock.recv(4096)
+                recv = sock.recv(4096)
+                stream = stream + recv.decode()
                 lines = stream.split("\n")
                 if len(lines) > 1:
                     line = lines[-2]
@@ -129,4 +130,4 @@ class game_player:
 
             if to_send is not None:
                 print("sending: " + to_send)
-                self.sock.sendall(to_send + "\n")
+                self.sock.sendall((to_send + "\n").encode())
