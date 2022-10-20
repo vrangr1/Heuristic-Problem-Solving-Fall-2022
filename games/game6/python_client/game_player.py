@@ -1,12 +1,9 @@
 import random
 import socket
 import time
-from enum import Enum
 from io_parser import *
-
-class player(Enum):
-    HUNTER = 1
-    PREY = 2
+from hunter import hunter
+from prey import prey
 
 class game_player:
     HOST = "localhost"
@@ -15,13 +12,14 @@ class game_player:
         self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.HOST, self.port))
-        self.player = player.HUNTER
+        self.player_type = player.HUNTER
+        self.player = None
     
     def run(self):
         stream = ""
         while True:
             while True:
-                recv = sock.recv(4096)
+                recv = self.sock.recv(4096)
                 stream = stream + recv.decode()
                 lines = stream.split("\n")
                 if len(lines) > 1:
@@ -41,92 +39,79 @@ class game_player:
             if line == "done":
                 break
             elif line == "hunter":
-                # hunter = True
-                self.player = player.HUNTER
+                self.player_type = player.HUNTER
+                self.player = hunter()
             elif line == "prey":
-                # hunter = False
-                self.player = player.PREY
+                self.player_type = player.PREY
+                self.player = prey()
             elif line == "sendname":
                 # to_send = "random_player_" + str(port) #Put team name here
                 to_send = self.TEAM_NAME
             else:
                 data = line.split(" ")
                 parsed_data = io_parser.parse_input(data)
-                if self.player == player.HUNTER:
-                    """
-                    TODO - Place Hunter code here
+                to_send = self.player.get_move(parsed_data)
+                # if self.player_type == player.HUNTER:
+                    # """
+                    # TODO - Place Hunter code here
 
-                    The line read from server contains:
-                        playerTimeLeft
-                        gameNum - 0/1
-                        tickNum
-                        maxWalls
-                        WallPlacementDelay
-                        Board Size x
-                        Board size y
-                        currentWallTimer
-                        hunter x pos
-                        hunter y pos
-                        hunter x vel
-                        hunter y vel
-                        prey x pos
-                        prey y pos
-                        numWalls
-                        WallInfo1, WallInfo2 ...
+                    # The line read from server contains:
+                    #     playerTimeLeft
+                    #     gameNum - 0/1
+                    #     tickNum
+                    #     maxWalls
+                    #     WallPlacementDelay
+                    #     Board Size x
+                    #     Board size y
+                    #     currentWallTimer
+                    #     hunter x pos
+                    #     hunter y pos
+                    #     hunter x vel
+                    #     hunter y vel
+                    #     prey x pos
+                    #     prey y pos
+                    #     numWalls
+                    #     WallInfo1, WallInfo2 ...
 
-                    To return:
-                        gameNum
-                        tickNum
-                        WallsToAdd - 0,1,2,3,4
-                        Indices of walls to be deleted, based on the game state sent by server
-                    """
-                    # wall = "0"
-                    # to_send = data[1] + " " + data[2] + " " + wall
-                    x = random.randint(0,50)
-                    wall = "0"
-                    if x == 0:
-                        wall = "1"
-                    elif x == 1:
-                        wall = "2"
-                    elif x == 2:
-                        wall = "3"
-                    elif x == 3:
-                        wall = "4"
-                    if random.randint(0,80) == 0:
-                        wall = "0 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20"
-                    to_send = data[1] + " " + data[2] + " " + wall
-                else:
-                    """
-                    TODO - Place Prey code here
+                    # To return:
+                    #     gameNum
+                    #     tickNum
+                    #     WallsToAdd - 0,1,2,3,4
+                    #     Indices of walls to be deleted, based on the game state sent by server
+                    # """
+                    
+                # else:
+                    # """
+                    # TODO - Place Prey code here
 
-                    The line read from server contains:
-                        playerTimeLeft
-                        gameNum - 0/1
-                        tickNum
-                        maxWalls
-                        WallPlacementDelay
-                        Board Size x
-                        Board size y
-                        currentWallTimer
-                        hunter x pos
-                        hunter y pos
-                        hunter x vel
-                        hunter y vel
-                        prey x pos
-                        prey y pos
-                        numWalls
-                        WallInfo1, WallInfo2 ...
+                    # The line read from server contains:
+                    #     playerTimeLeft
+                    #     gameNum - 0/1
+                    #     tickNum
+                    #     maxWalls
+                    #     WallPlacementDelay
+                    #     Board Size x
+                    #     Board size y
+                    #     currentWallTimer
+                    #     hunter x pos
+                    #     hunter y pos
+                    #     hunter x vel
+                    #     hunter y vel
+                    #     prey x pos
+                    #     prey y pos
+                    #     numWalls
+                    #     WallInfo1, WallInfo2 ...
 
 
-                    To return:
-                        gameNum
-                        tickNum
-                        prey x movement
-                        prey y movement
-                    """
-                    x = random.randint(-1,1)
-                    y = random.randint(-1,1)
-                    to_send = data[1] + " " + data[2] + " " + str(x) + " " + str(y)
+                    # To return:
+                    #     gameNum
+                    #     tickNum
+                    #     prey x movement
+                    #     prey y movement
+                    # """
+                    # x = random.randint(-1,1)
+                    # y = random.randint(-1,1)
+                    # to_send = data[1] + " " + data[2] + " " + str(x) + " " + str(y)
 
             if to_send is not None:
                 print("sending: " + to_send)
