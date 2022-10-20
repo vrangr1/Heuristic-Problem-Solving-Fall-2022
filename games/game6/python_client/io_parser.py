@@ -27,7 +27,7 @@ class DATA(Enum):
 
 class io_parser:
     @staticmethod
-    def parse_input(input_list) -> dict:
+    def parse_input(input_list) -> dict():
         data = dict()
         print(input_list)
         return dict()
