@@ -1,4 +1,3 @@
-import random
 import socket
 import time
 from io_parser import *
@@ -45,73 +44,11 @@ class game_player:
                 self.player_type = player.PREY
                 self.player = prey()
             elif line == "sendname":
-                # to_send = "random_player_" + str(port) #Put team name here
                 to_send = self.TEAM_NAME
             else:
                 data = line.split(" ")
                 parsed_data = io_parser.parse_input(data)
                 to_send = self.player.get_move(parsed_data)
-                # if self.player_type == player.HUNTER:
-                    # """
-                    # TODO - Place Hunter code here
-
-                    # The line read from server contains:
-                    #     playerTimeLeft
-                    #     gameNum - 0/1
-                    #     tickNum
-                    #     maxWalls
-                    #     WallPlacementDelay
-                    #     Board Size x
-                    #     Board size y
-                    #     currentWallTimer
-                    #     hunter x pos
-                    #     hunter y pos
-                    #     hunter x vel
-                    #     hunter y vel
-                    #     prey x pos
-                    #     prey y pos
-                    #     numWalls
-                    #     WallInfo1, WallInfo2 ...
-
-                    # To return:
-                    #     gameNum
-                    #     tickNum
-                    #     WallsToAdd - 0,1,2,3,4
-                    #     Indices of walls to be deleted, based on the game state sent by server
-                    # """
-                    
-                # else:
-                    # """
-                    # TODO - Place Prey code here
-
-                    # The line read from server contains:
-                    #     playerTimeLeft
-                    #     gameNum - 0/1
-                    #     tickNum
-                    #     maxWalls
-                    #     WallPlacementDelay
-                    #     Board Size x
-                    #     Board size y
-                    #     currentWallTimer
-                    #     hunter x pos
-                    #     hunter y pos
-                    #     hunter x vel
-                    #     hunter y vel
-                    #     prey x pos
-                    #     prey y pos
-                    #     numWalls
-                    #     WallInfo1, WallInfo2 ...
-
-
-                    # To return:
-                    #     gameNum
-                    #     tickNum
-                    #     prey x movement
-                    #     prey y movement
-                    # """
-                    # x = random.randint(-1,1)
-                    # y = random.randint(-1,1)
-                    # to_send = data[1] + " " + data[2] + " " + str(x) + " " + str(y)
 
             if to_send is not None:
                 print("sending: " + to_send)

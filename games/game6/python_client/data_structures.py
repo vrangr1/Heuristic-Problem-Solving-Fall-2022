@@ -10,16 +10,12 @@ class DATA(Enum):
     BOARD_SIZE_X = 5
     BOARD_SIZE_Y = 6
     WALL_TIMER = 7
-    # HUNTER_X = 8
-    # HUNTER_Y = 9
-    # HUNTER_XV = 10
-    # HUNTER_YV = 11
-    # PREY_X = 12
-    # PREY_Y = 13
+    
     WALL_COUNT = 14
     WALL_DATA = 15
     HUNTER_DATA = 16
     PREY_LOC = 17
+
     ADD_WALL = 18
     DELETE_WALL = 19
     PREY_MOVEMENT = 20
