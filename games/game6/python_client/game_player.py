@@ -79,7 +79,20 @@ class game_player:
                         WallsToAdd - 0,1,2,3,4
                         Indices of walls to be deleted, based on the game state sent by server
                     """
+                    # wall = "0"
+                    # to_send = data[1] + " " + data[2] + " " + wall
+                    x = random.randint(0,50)
                     wall = "0"
+                    if x == 0:
+                        wall = "1"
+                    elif x == 1:
+                        wall = "2"
+                    elif x == 2:
+                        wall = "3"
+                    elif x == 3:
+                        wall = "4"
+                    if random.randint(0,80) == 0:
+                        wall = "0 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20"
                     to_send = data[1] + " " + data[2] + " " + wall
                 else:
                     """
@@ -117,4 +130,3 @@ class game_player:
             if to_send is not None:
                 print("sending: " + to_send)
                 self.sock.sendall(to_send + "\n")
-        pass
