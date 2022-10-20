@@ -27,10 +27,10 @@ After cloning the repo, to properly update all the submodules cloned inside this
     - Game Architecture: [Jkker/bandit-game-architecture](https://github.com/Jkker/bandit-game-architecture)
 * Game 6: Evasion
     - Game Description: [link](https://cs.nyu.edu/courses/fall22/CSCI-GA.2965-001/evasion.html)
-    - Game Architecture: TBR
+    - Game Architecture: [Riju19/Evasion-Game](https://github.com/Riju19/Evasion-Game)
 * Game 7: Hidden Tunnel / Dig That
     - Game Description: [link](https://cs.nyu.edu/courses/fall22/CSCI-GA.2965-001/digthatcomp.html)
-    - Game Architecture: TBR
+    - Game Architecture: [BangBreakfast/Dig-that-Architecture-nyu-CSCI-GA.2965-001-FL22](https://github.com/BangBreakfast/Dig-that-Architecture-nyu-CSCI-GA.2965-001-FL22)
 * Game 8: The Dating Game
     - Game Description: [link](https://cs.nyu.edu/courses/fall22/CSCI-GA.2965-001/dating.html)
     - Game Architecture: TBR
