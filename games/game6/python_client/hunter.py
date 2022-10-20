@@ -198,7 +198,7 @@ class hunter:
             self.walls.append(horizontal_wall)
             move[DATA.ADD_WALL] = wall_type.HORIZONTAL
         else:
-            self.walls.append(vertical_area)
+            self.walls.append(vertical_wall)
             move[DATA.ADD_WALL] = wall_type.VERTICAL
         return move
     
