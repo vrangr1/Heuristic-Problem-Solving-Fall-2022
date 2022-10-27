@@ -171,7 +171,7 @@ class Client():
 		//		Two different probes may appear [1,1], [1,2] or [1,2][1,1]
 		//		But they are the same edge
         '''
-        
+        print(edge_set)
         pass
     
     def guess_path(self):
