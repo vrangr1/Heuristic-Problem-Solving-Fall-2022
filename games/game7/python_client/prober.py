@@ -7,12 +7,12 @@ from collections import defaultdict, deque
 DATA_SIZE = 8192  # 4096
 
 class Detector:
-    def __init__(self, num_grid, num_phase, tunnel_length, port):
+    def __init__(self, num_grid, num_phase, tunnel_length):
         self.player_name = 'remember_the_name'
         self.num_grid = num_grid
         self.num_phase = num_phase
         self.tunnel_length = tunnel_length
-        self.port = port
+        # self.port = port
         self.srv_conn = None
         self.graph = defaultdict(list)
         self.prev_probes = set()
@@ -60,7 +60,7 @@ class Detector:
                         no_probe.add(adj)
         return probes
 
-    def get_probes(self, probe_num):
+    def get_probes(self, probe_num) -> list:
         probe_rows = set()
         probe_rows.add(1)
         probe_rows.add(self.num_grid)
@@ -74,7 +74,8 @@ class Detector:
             for vertex in self.graph.keys():
                 if vertex[0] in probe_rows:
                     self.prev_probes.add(vertex)
-                    probes.append([vertex[0], vertex[1]])
+                    # probes.append([vertex[0], vertex[1]])
+                    probes.append([vertex[1], vertex[0]])
         
         return probes
 

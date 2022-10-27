@@ -2,6 +2,7 @@ import sys
 import socket
 import time
 from digger import build_tunnel
+from prober import Detector
 
 class Client():
     def __init__(self, port=5000):
@@ -16,7 +17,7 @@ class Client():
         self.socket.connect(("localhost", port))
 
         # Send over the name
-        self.socket.send("Python Client".encode("utf-8"))
+        self.socket.send("Kitkat Addicts Python Client".encode("utf-8"))
         
 
     def send_detector(self) :
@@ -65,8 +66,10 @@ class Client():
         self.player_id = input[0]
         self.grid_num = int(input[1])
         self.number_of_phases = int(input[2])
+        self.total_number_of_phases = self.number_of_phases
         self.length_of_path = int(input[3])
         res = 0
+        self.prober_object = Detector(self.grid_num, self.number_of_phases, self.length_of_path)
         if self.player_id == 'T': 
             tunnel = self.dig_tunnel()
             msg = "digtunnel"
@@ -152,10 +155,11 @@ class Client():
         //TODO: Select detector
 		//the pair<int,int> is the detector vertex;
         '''
-        res = []
-        for i in range(1,self.grid_num+1) :
-            res.append([1,i])
-        return res
+        return self.prober_object.get_probes(self.total_number_of_phases - self.number_of_phases)
+        # res = []
+        # for i in range(1,self.grid_num+1) :
+        #     res.append([1,i])
+        # return res
     
     def handle_edge_set(self,edge_set) :
         '''
@@ -167,6 +171,7 @@ class Client():
 		//		Two different probes may appear [1,1], [1,2] or [1,2][1,1]
 		//		But they are the same edge
         '''
+        
         pass
     
     def guess_path(self):
