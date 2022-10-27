@@ -1,5 +1,3 @@
-from tkinter import HORIZONTAL
-from numpy import Inf
 from debug_print import print_func
 from data_structures import *
 from io_parser import io_parser
