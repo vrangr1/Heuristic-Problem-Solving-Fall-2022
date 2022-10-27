@@ -70,6 +70,9 @@ class Client():
         self.length_of_path = int(input[3])
         res = 0
         self.prober_object = Detector(self.grid_num, self.number_of_phases, self.length_of_path)
+        self.prober_object.num_grid = self.grid_num
+        self.prober_object.num_phase = self.total_number_of_phases
+        self.prober_object.tunnel_length = self.length_of_path
         if self.player_id == 'T': 
             tunnel = self.dig_tunnel()
             msg = "digtunnel"
@@ -156,6 +159,7 @@ class Client():
 		//the pair<int,int> is the detector vertex;
         '''
         # probes =  self.prober_object.get_probes(self.total_number_of_phases - self.number_of_phases)
+        self.prober_object.num_phase = self.total_number_of_phases - self.number_of_phases
         probes = self.prober_object.get_probes(1)
         print("probes: " + str(probes))
         return probes
