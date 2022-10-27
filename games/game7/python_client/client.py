@@ -155,7 +155,8 @@ class Client():
         //TODO: Select detector
 		//the pair<int,int> is the detector vertex;
         '''
-        probes =  self.prober_object.get_probes(self.total_number_of_phases - self.number_of_phases)
+        # probes =  self.prober_object.get_probes(self.total_number_of_phases - self.number_of_phases)
+        probes = self.prober_object.get_probes(1)
         print("probes: " + str(probes))
         return probes
         # res = []
