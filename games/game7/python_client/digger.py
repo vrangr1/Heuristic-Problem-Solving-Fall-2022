@@ -49,11 +49,13 @@ def build_tunnel(num_grid, tunnel_length):
         if row % 2 == 0:
             l = cur_len
             while col < num_grid and (tunnel_length - cur_len) > (num_grid - row):
-                path.append((row, col))
+                # path.append((row, col))
+                path.append((col, row))
                 cur_len += 1
                 col += 1
             if cur_len == l:
-                path.append((row, col))
+                # path.append((row, col))
+                path.append((col, row))
                 cur_len += 1
                 col += 1
             col -= 1
@@ -61,11 +63,13 @@ def build_tunnel(num_grid, tunnel_length):
         else:
             l = cur_len
             while col > 1 and (tunnel_length - cur_len) > (num_grid - row):
-                path.append((row, col))
+                # path.append((row, col))
+                path.append((col, row))
                 cur_len += 1
                 col -= 1
             if cur_len == l:
-                path.append((row, col))
+                # path.append((row, col))
+                path.append((col, row))
                 cur_len += 1
                 col -= 1
             col += 1
