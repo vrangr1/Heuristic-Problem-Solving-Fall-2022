@@ -45,21 +45,30 @@ class Matchmaker:
             '''
             TO DO: You could use the candidates and score to implement algorithm
             '''
-        # self.parse_initial_data(self.initial_candidates)
+        self.parse_initial_data(self.initial_candidates)
 
     def play(self):
         # Start Write Candidates to P and Read from the Scores (Next Rounds)
         score = 2
         candidate = []
-        for i in range(20, 40):
-            candidates = self.generate_candidates(i, score)
-            self.socketfile.write(candidates)
+        # for i in range(20, 40):
+        for i in range(20):
+            candidate = self.generate_candidates(candidate, i, score)
+            self.socketfile.write(utils.floats_to_msg4(candidate))
+            # self.socketfile.write(candidate)
             self.socketfile.flush() 
             inputline = self.socketfile.readline()
             print("Server says:" + inputline)
             if inputline == "END\n":
                 sys.exit()
-            score = inputline.split(":")[1]
+            tmp = inputline
+            # print("inputline: " + str(inputline))
+            # print(tmp[-1])
+            # tmp = tmp[-1].strip('`')
+            score = float(tmp.split(":")[-1].strip().strip('`').split(",")[0])
+            # print(stri.split(":")[-1].strip().strip('`').split(",")[0])
+            # score = float(tmp[-1])
+            # score = float(inputline.split(":")[-1])
             time.sleep(.2)
         
         print("Server says:" + self.socketfile.readline())
@@ -79,10 +88,10 @@ class Matchmaker:
             self.candidates.append((candidate, score))
 
 
-        self.A = np.array([candidate[0] for candidate in self.candidates])
+        self.A = np.array([candidate[0] for candidate in self.candidates], dtype = float)
 
         # convert score also in 2d array, so we have same shape
-        self.B = np.array([np.array(candidate[1]) for candidate in self.candidates])
+        self.B = np.array([np.array(candidate[1]) for candidate in self.candidates], dtype = float)
 
         # Regularization matrix
         self.R = np.identity(self.A.shape[1]) * self.lam
@@ -99,48 +108,50 @@ class Matchmaker:
 
     def guess(self, candidate, score, index):
         if index != 0:
-            self.re_estimate(candidate, score)
+            self.re_estimate(candidate, score, index)
 
-        return self.findCandidate()
+        return self.find_candidate()
 
-    def re_estimate(self, candidate, score):
-        assert(len(candidate) == self.N)
+    def re_estimate(self, candidate, score,index):
+        assert len(candidate) == self.N, "len(candidate): " + str(len(candidate)) + "; self.N: " + str(self.N) + "index: " + str(index)
 
         self.candidates.append((candidate, score))
 
-        self.A = np.vstack((self.A, np.array([candidate])))
+        self.A = np.vstack((self.A, np.array([candidate], dtype = float)))
 
-        self.B = np.append(self.B, np.array(score))
+        self.B = np.append(self.B, np.array(score, dtype = float))
 
         self.R = np.identity(self.A.shape[1]) * self.lam
-        print(self.A.shape, self.R.shape, self.B.shape)
+        # print(self.A.shape, self.R.shape, self.B.shape)
 
         sub = np.dot(self.A.T, self.A) + np.dot(self.R.T, self.R)
-        self.estimate = np.dot(np.linalg.inv(sub), np.dot(self.A.T, self.B)).reshape(self.N)
+        one = np.linalg.inv(sub)
+        two = np.dot(self.A.T, self.B)
+        self.estimate = np.dot(one, two).reshape(self.N)
 
         # self.truncate_estimate()
 
-    def findCandidate(self):
+    def find_candidate(self):
         while 1:
             cand = np.array(self.estimate > 0.0, dtype = float).reshape(self.N)
 
             cand = cand % 1.0000001
 
-            if self.checkUniqueness(cand) == False:
-                cand = self.addNoise()
+            if self.check_uniqueness(cand) == False:
+                cand = self.add_noise()
 
-                if self.checkUniqueness(cand) == True:
+                if self.check_uniqueness(cand) == True:
                     return cand
             else:
                 return cand
 
-    def checkUniqueness(self, cand = []):
+    def check_uniqueness(self, cand = []):
         for c in self.candidates:
             if ((c[0] == cand).all()):
                 return False
         return True
 
-    def addNoise(self):
+    def add_noise(self):
         cWeights = self.estimate.copy()
 
         minis = utils.get_abs_min_neg_pos(cWeights, self.used_mini_index)
@@ -167,11 +178,13 @@ class Matchmaker:
 
         return cand
 
-    def generate_candidates(self, i, score):
+    def generate_candidates(self, candidate, i, score):
         '''
         TO DO: Change candidates to your own algorithm
         DON'T FORGET THE \n
         '''
+        candidate = self.guess(candidate, score, i)
+        return candidate
         if i < 30:
             candidates = "0." + ":0.".join(str(e)
                                         for e in [str(int(random.random()*10000))
@@ -179,8 +192,6 @@ class Matchmaker:
         else:                                       
             candidates = "1" + ":0"*(self.N-1) + "\n"
         return candidates
-        candidate = self.guess(candidate, score, i)
-        return candidate
 
 if __name__ == '__main__':
     matchmaker = Matchmaker()

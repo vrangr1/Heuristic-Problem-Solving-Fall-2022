@@ -26,7 +26,7 @@ def floats_to_msg4(arr):
     strings = []
     for a in arr:
         strings.append('%+01.4f' % a)
-    msg = ','.join(strings) + '\n'
+    msg = ':'.join(strings) + '\n'
     return msg
 
 

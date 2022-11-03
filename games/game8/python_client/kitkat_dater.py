@@ -34,7 +34,13 @@ class Dater:
                 print("Server says:" + input_line)
             candidate_values = input_line.split(":")
             time.sleep(.1)
-            weights = self.generate_adjusted_weight(candidate_values)
+            # assert len(candidate_values) == self.N, "candidate_values: " + str(candidate_values)
+            # print(candidate_values)
+            if len(candidate_values) == self.N:
+                weights = self.generate_adjusted_weight(candidate_values)
+            else:
+                # weights = "1:-1" + ":0"*(self.N-2) + "\n"
+                pass
             self.socketfile.write(weights)
             self.socketfile.flush()
             
@@ -91,8 +97,8 @@ class Dater:
         TO DO: Change weights to your own algorithm
         DON'T FORGET THE \n
         '''
-        print("candidate_values: ", end = '')
-        print(candidate_values)
+        # print("candidate_values: ", end = '')
+        # print(candidate_values)
         candidate_values = [float(x) for x in candidate_values]
         return utils.floats_to_msg2(self.get_new_weights(candidate_values))
         weights = "1:-1" + ":0"*(self.N-2) + "\n"
