@@ -8,8 +8,6 @@ import utils
 import copy
 signal(SIGPIPE,SIG_DFL)
 
-
-
 class Matchmaker:
     def __init__(self, lam = 0.005):
         self.clientsocket = socket.socket()
