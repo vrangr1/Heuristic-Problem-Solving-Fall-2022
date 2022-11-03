@@ -61,11 +61,14 @@ class Matchmaker:
             print("Server says:" + inputline)
             if inputline == "END\n":
                 sys.exit()
-            tmp = inputline
+            tmp = inputline.split(":")
             # print("inputline: " + str(inputline))
             # print(tmp[-1])
             # tmp = tmp[-1].strip('`')
-            score = float(tmp.split(":")[-1].strip().strip('`').split(",")[0])
+            if len(tmp) != self.N:
+                score = float(tmp[-1].strip().strip('`').split(",")[0])
+            else:
+                score = inputline.split(":")[1]
             # print(stri.split(":")[-1].strip().strip('`').split(",")[0])
             # score = float(tmp[-1])
             # score = float(inputline.split(":")[-1])
