@@ -89,7 +89,7 @@ def build_tunnel_mst(num_grid, tunnel_length, f):
         if vertex[0] == num_grid:
             tunnel_verts = path
             return True
-
+    
         for adj_vertex in mst[vertex]:
             if adj_vertex not in path:
                 path.append(adj_vertex)

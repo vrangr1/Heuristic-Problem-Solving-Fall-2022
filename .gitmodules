@@ -13,3 +13,6 @@
 [submodule "games/game7/Dig-that-Architecture-nyu-CSCI-GA.2965-001-FL22"]
 	path = games/game7/Dig-that-Architecture-nyu-CSCI-GA.2965-001-FL22
 	url = https://github.com/BangBreakfast/Dig-that-Architecture-nyu-CSCI-GA.2965-001-FL22
+[submodule "games/game8/Dating-Game"]
+	path = games/game8/Dating-Game
+	url = https://github.com/haoruigao/Dating-Game.git
