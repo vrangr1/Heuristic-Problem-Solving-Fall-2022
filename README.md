@@ -34,6 +34,6 @@ After cloning the repo, to properly update all the submodules cloned inside this
 * Game 8: The Dating Game
     - Game Description: [link](https://cs.nyu.edu/courses/fall22/CSCI-GA.2965-001/dating.html)
     - Game Architecture: [haoruigao/Dating-Game](https://github.com/haoruigao/Dating-Game)
-* Game 9: Submarine Hunting
-    - Game Description: [link](https://cs.nyu.edu/courses/fall22/CSCI-GA.2965-001/subhunt.html)
+* Game 9: Gravitational Voronoi Game
+    - Game Description: [link](https://cs.nyu.edu/courses/fall22/CSCI-GA.2965-001/voronoi_gravitational.html)
     - Game Architecture: TBR
