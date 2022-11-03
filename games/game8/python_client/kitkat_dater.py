@@ -2,6 +2,7 @@ import socket
 import time
 import sys
 import utils
+import numpy as np
 from signal import signal, SIGPIPE, SIG_DFL  
 signal(SIGPIPE,SIG_DFL)
 
@@ -26,7 +27,8 @@ class Dater:
         self.weights_init = self.generate_init_weight()
         self.socketfile.write(self.weights_init)
         self.socketfile.flush()
-        
+        self.weights_init = self.weights_init.split(":")
+        self.weights_init = [float(x) for x in self.weights_init]
         # # Generate the adjusted weights (Next Rounds)
         for i in range(20):
             input_line = self.socketfile.readline()
@@ -67,8 +69,13 @@ class Dater:
         # Use guess and self.initial_weights to calculate new data
         # send back initial weight for now
         # response = utils.parse_response(guess)
-        noise = utils.get_noise(self.initial_weights, response)
-        return self.initial_weights + noise
+        # print("self.weights_init: " + str(self.weights_init))
+        # self.weights_init = 
+        # self.weights_init = [float(x) for x in self.weights_init]
+
+        self.weights_init = np.array(self.weights_init, dtype = float)
+        noise = utils.get_noise(self.weights_init, response)
+        return self.weights_init + noise
 
     def generate_init_weight(self):
         '''
