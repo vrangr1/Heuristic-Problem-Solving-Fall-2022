@@ -16,3 +16,6 @@
 [submodule "games/game8/Dating-Game"]
 	path = games/game8/Dating-Game
 	url = https://github.com/haoruigao/Dating-Game.git
+[submodule "games/game9/Gravitational_Voronoi"]
+	path = games/game9/Gravitational_Voronoi
+	url = https://github.com/HarshGrandeur/Gravitational_Voronoi.git

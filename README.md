@@ -36,4 +36,4 @@ After cloning the repo, to properly update all the submodules cloned inside this
     - Game Architecture: [haoruigao/Dating-Game](https://github.com/haoruigao/Dating-Game)
 * Game 9: Gravitational Voronoi Game
     - Game Description: [link](https://cs.nyu.edu/courses/fall22/CSCI-GA.2965-001/voronoi_gravitational.html)
-    - Game Architecture: TBR
+    - Game Architecture: [HarshGrandeur/Gravitational_Voronoi](https://github.com/HarshGrandeur/Gravitational_Voronoi.git)
