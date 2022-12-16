@@ -1,9 +1,10 @@
-# CSCI-GA.2965 Heuristic Problem Solving, Fall 2022
+# CSCI-GA.2965 Heuristic Problem Solving, Fall 2022, NYU
 Professor: Dr. Dennis Shasha  
 
 Team Name: **Kitkat Addicts**  
 Team Members: Anav Prasad, [Kumar Prasun](https://github.com/TestSubjector)  
 
+## Repository Setup:
 After cloning the repo, to properly update all the submodules cloned inside this repo, you will need to run the following command:
 
 ```git submodule update --init --recursive```
@@ -37,3 +38,7 @@ After cloning the repo, to properly update all the submodules cloned inside this
 * Game 9: Gravitational Voronoi Game
     - Game Description: [link](https://cs.nyu.edu/courses/fall22/CSCI-GA.2965-001/voronoi_gravitational.html)
     - Game Architecture: [HarshGrandeur/Gravitational_Voronoi](https://github.com/HarshGrandeur/Gravitational_Voronoi.git)
+
+## Final Project:
+Our final project was [Prime Squares Game](https://cims.nyu.edu/drecco2016/games/Prime_Squares/).  
+The github repository of the same can be found at this [link](https://github.com/TestSubjector/PrimeSquaresGame).
